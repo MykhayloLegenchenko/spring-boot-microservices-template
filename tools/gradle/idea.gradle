@@ -1,0 +1,100 @@
+//file:noinspection GrUnresolvedAccess
+import groovy.json.JsonSlurper
+
+apply plugin: 'org.jetbrains.gradle.plugin.idea-ext'
+
+idea {
+    module {
+        // Download dependency sources
+        downloadSources = true
+    }
+
+    project {
+        settings {
+            compiler {
+                javac {
+                    // Compiler JVM args
+                    javacAdditionalOptions compilerJvmArgs.join(' ')
+                }
+            }
+
+            // Spring Boot run configuration
+            withIDEAFileXml('workspace.xml') { XmlProvider p ->
+                def projectNode = p.asNode()
+                def runMgr = projectNode.component.find {
+                    it['@name'] == 'RunManager'
+                } as Node
+
+                if (!runMgr) {
+                    runMgr = projectNode.appendNode('component', [name: 'RunManager'])
+                }
+
+                def config = runMgr.configuration.find {
+                    it['@default'] == 'true' && it['@type'] == 'SpringBootApplicationConfigurationType'
+                } as Node
+
+                if (!config) {
+                    config = runMgr.appendNode('configuration',
+                            [default    : 'true',
+                             type       : 'SpringBootApplicationConfigurationType',
+                             factoryName: 'Spring Boot'])
+
+                    // On 'Update' action: Update classes and resources
+                    config.appendNode('option',
+                            [name : 'UPDATE_ACTION_UPDATE_POLICY',
+                             value: 'UpdateClassesAndResources'])
+
+                    // OpenTelemetry instrumentation JVM args
+                    def runJwmArgs = ['-javaagent:$PROJECT_DIR$/tools/opentelemetry/opentelemetry-javaagent.jar',
+                                      '-Dotel.javaagent.configuration-file=$PROJECT_DIR$/tools/opentelemetry/local.properties',
+                                      '-Dotel.javaagent.extensions=$PROJECT_DIR$/libs/opentelemetry-extension/build/libs/opentelemetry-extension-0.0.1-SNAPSHOT.jar']
+
+                    config.appendNode('option',
+                            [name : 'VM_PARAMETERS',
+                             value: runJwmArgs.join(' ')])
+                }
+            }
+        }
+    }
+}
+
+tasks.register('createIdeaFiles', {
+    def ideaLayoutFile = file('layout.json')
+
+    doLast {
+        if (!ideaLayoutFile.exists()) {
+            return
+        }
+
+        def json = new JsonSlurper().parseText(ideaLayoutFile.text)
+        def ideaDir = new File(json['ideaDirPath'] as String)
+
+        // Enable Google Java Format plugin
+        def file = new File(ideaDir, 'google-java-format.xml')
+        if (!file.exists()) {
+            file << """<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GoogleJavaFormatSettings">
+    <option name="enabled" value="true" />
+  </component>
+</project>
+"""
+        }
+
+        // Use Spring nullable annotations
+        file = new File(ideaDir, 'misc.xml')
+        if (!file.exists()) {
+            file << """<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="org.springframework.lang.Nullable" />
+    <option name="myDefaultNotNull" value="org.springframework.lang.NonNull" />
+  </component>
+</project>
+"""
+        }
+
+    }
+})
+
+tasks.processIdeaSettings.dependsOn tasks.createIdeaFiles

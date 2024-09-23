@@ -1,0 +1,4 @@
+api:
+  weather:
+    apiKey: 0adb011c0e154da99ce181731243107
+    url: https://api.weatherapi.com/v1

@@ -1,0 +1,13 @@
+ext {
+    dbUrl = 'jdbc:mysql://127.0.0.1:3306/users'
+}
+
+apply from: "${rootDir}/tools/gradle/service/servlet.gradle"
+apply from: "${rootDir}/tools/gradle/service/mysql.gradle"
+
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    // Project dependencies
+    implementation project(':users-client')
+}

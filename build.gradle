@@ -1,0 +1,98 @@
+//file:noinspection GrUnresolvedAccess
+plugins {
+    id 'com.diffplug.spotless' version "${spotlessVersion}" apply false
+    id 'com.github.spotbugs' version "${spotbugsVersion}" apply false
+    id 'org.jetbrains.gradle.plugin.idea-ext' version "${ideaExtPluginVersion}" apply false
+
+    id 'org.springframework.boot' version "${springframeworkBootVersion}" apply false
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}" apply false
+
+    id 'org.liquibase.gradle' version "${liquibasePluginVersion}" apply false
+}
+
+// Project setup
+apply from: 'tools/gradle/setup.gradle'
+
+subprojects {
+    group = 'com.example'
+
+    apply plugin: 'java'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(23)
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs = compilerJvmArgs
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+
+        testCompileOnly {
+            extendsFrom testAnnotationProcessor
+        }
+
+        testAnnotationProcessor {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        // Lombok
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        // JSR 305
+        // Fixes warning: unknown enum constant When.MAYBE
+        compileOnly "com.google.code.findbugs:jsr305:${findbugsJsr305Version}"
+
+        // MapStruct
+        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+        // JUnit
+        testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformVersion}"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        java {
+            googleJavaFormat("${googleJavaFormatVersion}")
+        }
+    }
+
+    apply plugin: 'com.github.spotbugs'
+    spotbugs {
+        excludeFilter = file("${rootDir}/tools/spotbugs/exclude.xml")
+    }
+
+    spotbugsMain {
+        reports.create("html") {
+            required = true
+            outputLocation = layout.buildDirectory.file("reports/spotbugs.html")
+            setStylesheet("fancy-hist.xsl")
+        }
+    }
+
+    spotbugsTest {
+        reports.create("html") {
+            required = true
+            outputLocation = layout.buildDirectory.file("reports/spotbugs-test.html")
+            setStylesheet("fancy-hist.xsl")
+        }
+    }
+
+    assemble.dependsOn tasks.spotlessApply
+}

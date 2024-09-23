@@ -1,0 +1,13 @@
+name: template
+include:
+  - mysql/compose.yaml
+  - observability/lgtm.yaml
+  - cloud/compound/compose.yaml # compound cloud
+#  - cloud/compose.yaml
+  - services/compose.yaml
+
+networks:
+  template-network:
+
+volumes:
+  mysqldb:

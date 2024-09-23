@@ -1,0 +1,19 @@
+apply from: "${rootDir}/tools/gradle/service/cloud.gradle"
+
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    // Spring Cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // Fixes error "Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider" on MacOS.
+    var os = org.gradle.internal.os.OperatingSystem.current()
+    //noinspection GrUnresolvedAccess
+    if (os.isMacOsX() && os.getArch() == 'aarch64') {
+        def nettyVersion = dependencyManagement.managedVersions['io.netty:netty-all']
+        runtimeOnly "io.netty:netty-resolver-dns-native-macos:${nettyVersion}:osx-aarch_64"
+    }
+}

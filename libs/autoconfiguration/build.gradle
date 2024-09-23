@@ -1,0 +1,17 @@
+apply from: "${rootDir}/tools/gradle/lib/spring.gradle"
+
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    // Spring Boot
+	compileOnly 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	compileOnly 'org.springframework.boot:spring-boot-starter-security'
+	compileOnly 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Project dependencies
+    compileOnly project(':common-lib')
+
+    // OpenAPI
+    compileOnly "org.springdoc:springdoc-openapi-starter-common:${springDocOpenApiStarterVersion}"
+}

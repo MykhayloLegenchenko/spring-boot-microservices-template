@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      routes:
+        # users-service
+        - id: users_route
+          uri: ${services.users}
+          predicates:
+            - Path=/api/v1/{dir:auth|roles|users}/**
+
+        - id: users_openapi_route
+          uri: ${services.users}
+          predicates:
+            - Path=/swagger-ui.html, /swagger-ui/**, /v3/api-docs.yaml, /v3/api-docs/**
+          filters:
+            - RewritePath=/users/?(?<segment>.*), /$\{segment}
+
+        # weather-service
+        - id: weather_route
+          uri: ${services.weather}
+          predicates:
+            - Path=/api/v1/weather/**
+
+        - id: weather_openapi_route
+          uri: ${services.weather}
+          predicates:
+            - Path=/swagger-ui.html, /swagger-ui/**, /v3/api-docs.yaml, /v3/api-docs/**
+          filters:
+            - RewritePath=/users/?(?<segment>.*), /$\{segment}
+
+services:
+  users: lb://users-service
+  weather: lb://weather-service

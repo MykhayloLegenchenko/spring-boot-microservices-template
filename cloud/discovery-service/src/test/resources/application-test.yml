@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    discovery:
+      enabled: true
+
+services:
+  discovery: http://localhost:${server.port}

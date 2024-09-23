@@ -1,0 +1,61 @@
+services:
+  # Discovery service
+  discovery:
+    container_name: discovery-service
+    build:
+      context: ../..
+      dockerfile: docker/services/Dockerfile
+      args:
+        GROUP: 'cloud'
+        SERVICE: 'discovery-service'
+    environment:
+      PORT: 8761
+      PROFILE: "container, noconfig"
+      OTEL_PROFILE: 'disabled'
+    ports:
+      - '8761:8761'
+    networks:
+      - template-network
+
+  # Config service
+  config:
+    container_name: config-service
+    build:
+      context: ../..
+      dockerfile: docker/services/Dockerfile
+      args:
+        GROUP: 'cloud'
+        SERVICE: 'config-service'
+    environment:
+      PORT: 8888
+      PROFILE: "container, noconfig"
+      OTEL_PROFILE: 'disabled'
+    ports:
+      - '8888:8888'
+    volumes:
+      - ../../config:/root/config
+    networks:
+      - template-network
+    depends_on:
+      discovery:
+        condition: service_healthy
+
+  # Gateway service
+  gateway:
+    container_name: gateway-service
+    build:
+      context: ../..
+      dockerfile: docker/services/Dockerfile
+      args:
+        GROUP: 'cloud'
+        SERVICE: 'gateway-service'
+    environment:
+      PROFILE: "container, noconfig"
+      OTEL_PROFILE: 'disabled'
+    ports:
+      - '8080:8080'
+    networks:
+      - template-network
+    depends_on:
+      config:
+        condition: service_healthy

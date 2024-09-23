@@ -1,0 +1,25 @@
+//file:noinspection GrUnresolvedAccess
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Project dependencies
+    implementation project(':common-lib')
+    implementation project(':autoconfiguration')
+    testImplementation project(':test-lib')
+
+    // Cache
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

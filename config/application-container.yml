@@ -1,0 +1,10 @@
+auth:
+  jwt:
+    access-token:
+      secret: accessSecret
+
+services:
+#  discovery: http://discovery-service:8761
+  discovery: ${DISCOVERY_SERVICE_URL:http://config-service:8761} # compound cloud
+  users:  lb://users-service
+  weather: lb://weather-service

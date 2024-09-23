@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysqldb:3306/users
+    username: user
+    password: password
+
+auth:
+  jwt:
+    access-token:
+      secret: accessSecret
+      ttl: 43200 # 300
+
+
+    refresh-token:
+      secret: refreshSecret
+      ttl: 86400 # 1800

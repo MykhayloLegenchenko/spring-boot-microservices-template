@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+    discovery:
+      enabled: false
+
+auth:
+  jwt:
+    issuer: https://example.com
+    access-token:
+      secret: testAccessSecret
+      ttl: 300
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "mysql"
+
+  datasource:
+    driverClassName: com.example.test.data.h2.DriverWrapper
+    url: wrapper:h2:mem:testdb;MODE=MYSQL;TIME ZONE=UTC;NON_KEYWORDS=USER;DB_CLOSE_ON_EXIT=FALSE
+
+  sql:
+    init:
+      platform: h2

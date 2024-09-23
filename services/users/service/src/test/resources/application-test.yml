@@ -1,0 +1,18 @@
+auth:
+  jwt:
+    refresh-token:
+      ttl: 1800
+      secret: testRefreshSecret
+
+#logging:
+#   level:
+#    org:
+#      apache:
+#        hc:
+#          client5:
+#            http: DEBUG
+
+#logging:
+#  level:
+#    com:
+#      example: debug

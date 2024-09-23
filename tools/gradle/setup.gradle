@@ -1,0 +1,44 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
+// Settings
+ext {
+    // Compiler JVM args
+    compilerJvmArgs = [
+            // Exports for annotation-processor
+            '--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+            '--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+            '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+
+            // Mapstruct settings
+            '-Amapstruct.defaultComponentModel=spring',
+            '-Amapstruct.unmappedTargetPolicy=IGNORE']
+}
+
+// Install GIT hooks
+def hooksDir = file('.git/hooks')
+if (hooksDir.isDirectory()) {
+    for (def hook : file('tools/git/hooks').listFiles()) {
+        if (!hook.isFile()) {
+            continue
+        }
+
+        Files.copy(
+                hook.toPath(),
+                hooksDir.toPath().resolve(hook.getName()),
+                StandardCopyOption.REPLACE_EXISTING)
+    }
+}
+
+// Download OpenTelemetry JavaAgent
+def uri = new URI('https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar')
+def dest = file('./tools/opentelemetry/opentelemetry-javaagent.jar')
+if (!dest.exists()) {
+    try (def is = uri.toURL().openStream()) {
+        Files.copy(is, dest.toPath())
+    }
+}
+
+// IntelliJ IDEA project setup
+apply from: 'tools/gradle/idea.gradle'

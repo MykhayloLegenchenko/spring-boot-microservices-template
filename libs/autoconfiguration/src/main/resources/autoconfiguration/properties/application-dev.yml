@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+auth:
+  jwt:
+    access-token:
+      secret: accessSecret
+
+services:
+  discovery: http://localhost:8761
+
+logging:
+  level:
+    io:
+      opentelemetry:
+        exporter:
+          internal: error

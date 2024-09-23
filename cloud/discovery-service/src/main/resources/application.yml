@@ -1,0 +1,14 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: discovery-service
+
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+
+  server:
+    eviction-interval-timer-in-ms: 30000

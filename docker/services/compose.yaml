@@ -1,0 +1,40 @@
+services:
+  # Users service
+  users-service:
+    container_name: users-service
+    build:
+      context: ../..
+      dockerfile: docker/services/Dockerfile
+      args:
+        GROUP: 'services'
+        SERVICE: 'users/service'
+    ports:
+      - '8081:8080'
+    networks:
+      - template-network
+    depends_on:
+      mysqldb:
+        condition: service_started
+      observability:
+        condition: service_started
+      config:
+        condition: service_healthy
+
+  # Weather service
+  weather-service:
+    container_name: weather-service
+    build:
+      context: ../..
+      dockerfile: docker/services/Dockerfile
+      args:
+        GROUP: 'services'
+        SERVICE: 'weather/service'
+    ports:
+      - '8082:8080'
+    networks:
+      - template-network
+    depends_on:
+      observability:
+        condition: service_started
+      config:
+        condition: service_healthy

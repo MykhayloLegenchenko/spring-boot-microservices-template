@@ -1,0 +1,2 @@
+services:
+  discovery: ${DISCOVERY_SERVICE_URL:http://discovery-service:8761}

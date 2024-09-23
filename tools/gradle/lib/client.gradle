@@ -1,0 +1,14 @@
+//file:noinspection GrUnresolvedAccess
+apply from: "${rootDir}/tools/gradle/lib/spring.gradle"
+
+dependencies {
+    // Spring Boot
+    compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // OpenAPI
+    compileOnly "org.springdoc:springdoc-openapi-starter-common:${springDocOpenApiStarterVersion}"
+
+    // Project dependencies
+    compileOnly project(':common-lib')
+    annotationProcessor project(':annotation-processor')
+}
