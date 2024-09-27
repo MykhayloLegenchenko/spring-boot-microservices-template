@@ -29,7 +29,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Setter
 @ToString
-@Entity(name = "User")
+@Entity
 public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
