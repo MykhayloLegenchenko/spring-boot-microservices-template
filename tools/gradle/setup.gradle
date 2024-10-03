@@ -5,7 +5,10 @@ import java.nio.file.StandardCopyOption
 ext {
     // Compiler JVM args
     compilerJvmArgs = [
-            // Terminates compilation when warnings occur
+            // Enable all warnings except issues related to annotation processing and serializable classes
+            '-Xlint:all,-processing,-serial',
+
+            // Terminate compilation when warnings occur
             '-Werror',
 
             // Exports for annotation-processor
