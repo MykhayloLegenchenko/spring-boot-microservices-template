@@ -7,7 +7,7 @@ import java.lang.reflect.Proxy;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /** Proxy for {@code WebClient.Builder} objects. */
@@ -26,7 +26,7 @@ class BuilderProxy implements InvocationHandler {
   }
 
   @Override
-  public Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object @Nullable [] args) throws Throwable {
     if ("build".equals(method.getName()) && args == null) {
       return ClientProxy.create(builder.clone().apply(customizer).build(), customizer);
     }
@@ -41,7 +41,7 @@ class BuilderProxy implements InvocationHandler {
     return result;
   }
 
-  private Object invokeMethod(Method method, @Nullable Object[] args) throws Throwable {
+  private Object invokeMethod(Method method, Object @Nullable [] args) throws Throwable {
     try {
       return method.invoke(builder, args);
     } catch (InvocationTargetException e) {

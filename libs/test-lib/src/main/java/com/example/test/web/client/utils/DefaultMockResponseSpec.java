@@ -7,10 +7,10 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 
 /** Helper record for JSON deserialization of MockResponseSpec instances. */
 @SuppressWarnings("ArrayRecordComponent")
@@ -18,7 +18,7 @@ record DefaultMockResponseSpec(
     @Nullable HttpMethod method,
     @Nullable URI url,
     @Nullable @JsonDeserialize(using = HttpHeadersDeserializer.class) HttpHeaders headers,
-    @Nullable @JsonDeserialize(using = BodyDeserializer.class) byte[] body,
+    @JsonDeserialize(using = BodyDeserializer.class) byte @Nullable [] body,
     @NotNull @Valid Response response)
     implements MockResponseSpec {
 
@@ -30,7 +30,7 @@ record DefaultMockResponseSpec(
   record Response(
       @NotNull HttpStatus status,
       @Nullable @JsonDeserialize(using = HttpHeadersDeserializer.class) HttpHeaders headers,
-      @Nullable @JsonDeserialize(using = BodyDeserializer.class) byte[] body)
+      @JsonDeserialize(using = BodyDeserializer.class) byte @Nullable [] body)
       implements MockResponseSpec.Response {}
 
   private boolean checkMethod(HttpMethod method) {

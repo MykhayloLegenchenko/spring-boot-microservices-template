@@ -1,9 +1,9 @@
 package com.example.common.data;
 
 import lombok.EqualsAndHashCode;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.Nullable;
 
 /** {@code Pageable} based on page offset. */
 @EqualsAndHashCode

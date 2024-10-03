@@ -1,10 +1,10 @@
 package com.example.test.web.client.utils;
 
 import java.net.URI;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 
 /** Mock HTTP response specification. */
 public interface MockResponseSpec {
@@ -41,15 +41,13 @@ public interface MockResponseSpec {
      *
      * @return the response headers
      */
-    @Nullable
-    HttpHeaders headers();
+    @Nullable HttpHeaders headers();
 
     /**
      * Returns response body.
      *
      * @return the response body
      */
-    @Nullable
-    byte[] body();
+    byte @Nullable [] body();
   }
 }

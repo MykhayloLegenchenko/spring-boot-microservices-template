@@ -3,13 +3,13 @@ package com.example.autoconfigure.web.reactive.error;
 import com.example.common.error.ErrorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
@@ -48,6 +48,7 @@ public class ReactiveResponseEntityExceptionHandler extends ResponseEntityExcept
       log.debug("Response error", ex);
     }
 
+    //noinspection DataFlowIssue
     return super.handleExceptionInternal(ex, body, headers, status, exchange)
         .mapNotNull(
             entity ->

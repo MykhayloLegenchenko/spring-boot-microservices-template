@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import java.io.IOException;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
 
 /** Deserializer class that can deserialize HttpHeaders instances. */
 class HttpHeadersDeserializer extends StdDeserializer<HttpHeaders> {

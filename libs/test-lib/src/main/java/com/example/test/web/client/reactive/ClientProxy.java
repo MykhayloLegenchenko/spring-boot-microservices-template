@@ -7,7 +7,7 @@ import java.lang.reflect.Proxy;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /** Proxy for {@code WebClient} objects. */

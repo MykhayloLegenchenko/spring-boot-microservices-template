@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Schema(description = "The extended user DTO")
 public record UserDtoEx(
@@ -18,6 +18,5 @@ public record UserDtoEx(
     @Schema(description = "User enabled flag", example = "true") boolean enabled,
     @Schema(description = "User deletion timestamp", example = "2023-11-11T06:19:11.018Z")
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @Nullable
-        Instant deletedAt)
+        @Nullable Instant deletedAt)
     implements UserData {}

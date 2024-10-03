@@ -9,11 +9,11 @@ import jakarta.persistence.criteria.JoinType;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserRepository extends ExtendedJpaRepository<UserEntity, Long> {

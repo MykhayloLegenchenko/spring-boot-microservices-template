@@ -2,7 +2,7 @@ package com.example.common.error.validation;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** Field validation error object. */
 @Getter

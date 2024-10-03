@@ -3,7 +3,7 @@ package com.example.common.util;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The value holder interface.
@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
  *
  * @param <T> value type
  */
-public interface Holder<T> extends Supplier<T>, Consumer<T> {
+public interface Holder<T extends @Nullable Object> extends Supplier<T>, Consumer<T> {
   /**
    * Creates a new {@code Holder} with a {@code null} value.
    *

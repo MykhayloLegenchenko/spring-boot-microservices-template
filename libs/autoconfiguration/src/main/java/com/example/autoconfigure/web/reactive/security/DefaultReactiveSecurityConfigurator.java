@@ -2,8 +2,8 @@ package com.example.autoconfigure.web.reactive.security;
 
 import com.example.common.security.configuration.SecurityConfigurationUtils;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;

@@ -1,6 +1,6 @@
 package com.example.common.util;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /** Implementation class for {@link Holder} interface. */
 class HolderImpl<T> implements Holder<T> {

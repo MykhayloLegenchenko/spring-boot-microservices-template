@@ -32,7 +32,7 @@ subprojects {
         options.errorprone {
             disableWarningsInGeneratedCode = true
             errorproneArgs = [
-                    "-XepOpt:NullAway:AnnotatedPackages=com.example,org.springframework",
+                    '-XepOpt:NullAway:AnnotatedPackages=com.example,org.springframework,io.opentelemetry',
                     '-Xep:StringCaseLocaleUsage:OFF',
                     '-Xep:StringSplitter:OFF',
             ]
@@ -68,10 +68,6 @@ subprojects {
         // Lombok
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-        // JSR 305
-        // Fixes warning: unknown enum constant When.MAYBE
-        compileOnly "com.google.code.findbugs:jsr305:${findbugsJsr305Version}"
 
         // MapStruct
         annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"

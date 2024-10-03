@@ -1,14 +1,11 @@
 package com.example.client.users.user.dto;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface FindUsersFilter {
-  @Nullable
-  String search();
+  @Nullable String search();
 
-  @Nullable
-  Boolean enabled();
+  @Nullable Boolean enabled();
 
-  @Nullable
-  Boolean deleted();
+  @Nullable Boolean deleted();
 }

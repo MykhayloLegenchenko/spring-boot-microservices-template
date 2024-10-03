@@ -2,7 +2,7 @@ package com.example.client.users.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Builder(toBuilder = true)
 @Schema(description = "The count users request DTO")

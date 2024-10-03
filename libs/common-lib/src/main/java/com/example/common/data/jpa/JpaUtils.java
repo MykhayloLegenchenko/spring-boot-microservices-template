@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.criteria.JpaCriteriaQuery;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.ClassUtils;
 
 /** JPA utilities. */
