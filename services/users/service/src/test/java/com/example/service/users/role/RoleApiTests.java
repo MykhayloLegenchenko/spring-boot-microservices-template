@@ -1,4 +1,4 @@
-package com.example.service.users;
+package com.example.service.users.role;
 
 import static com.example.test.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
@@ -10,9 +10,11 @@ import com.example.common.security.jwt.JwtTokenService;
 import com.example.common.uuid.UuidType;
 import com.example.common.uuid.UuidUtils;
 import com.example.common.web.client.blocking.BlockingClientFactory;
+import com.example.service.users.UsersServiceApplication;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.web.client.RestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = UsersServiceApplication.class)
 @Import(JwtTokenService.class)
+@NullUnmarked
 class RoleApiTests {
   private static final List<RoleDto> systemRoles =
       Stream.of("USER", "REFRESH", "ADMIN", "SUPER").map(RoleDto::new).toList();

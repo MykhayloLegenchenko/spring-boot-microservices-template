@@ -1,4 +1,4 @@
-package com.example.service.users;
+package com.example.service.users.user;
 
 import static com.example.test.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
@@ -16,11 +16,13 @@ import com.example.common.security.jwt.JwtTokenService;
 import com.example.common.uuid.UuidType;
 import com.example.common.uuid.UuidUtils;
 import com.example.common.web.client.blocking.BlockingClientFactory;
+import com.example.service.users.UsersServiceApplication;
 import com.example.service.users.role.RoleRepository;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.Mapper;
@@ -36,6 +38,7 @@ import org.springframework.web.client.RestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = UsersServiceApplication.class)
 @Import(JwtTokenService.class)
+@NullUnmarked
 class UserApiTest {
   private static final UpdateUserRequest conflictUpdateUserRequest =
       new UpdateUserRequest("john@example.com", "Fist", "Last");

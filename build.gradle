@@ -1,7 +1,7 @@
 //file:noinspection GrUnresolvedAccess
 plugins {
     id 'com.diffplug.spotless' version "${spotlessVersion}" apply false
-    id 'com.github.spotbugs' version "${spotbugsVersion}" apply false
+    id 'net.ltgt.errorprone' version "${errorpronePluginVersion}" apply false
     id 'org.jetbrains.gradle.plugin.idea-ext' version "${ideaExtPluginVersion}" apply false
 
     id 'org.springframework.boot' version "${springframeworkBootVersion}" apply false
@@ -23,8 +23,20 @@ subprojects {
         }
     }
 
+    apply plugin: 'net.ltgt.errorprone'
+
     tasks.withType(JavaCompile).configureEach {
-        options.compilerArgs = compilerJvmArgs
+        options.compilerArgs += compilerJvmArgs
+
+        // Error Prone
+        options.errorprone {
+            disableWarningsInGeneratedCode = true
+            errorproneArgs = [
+                    "-XepOpt:NullAway:AnnotatedPackages=com.example,org.springframework",
+                    '-Xep:StringCaseLocaleUsage:OFF',
+                    '-Xep:StringSplitter:OFF',
+            ]
+        }
     }
 
     configurations {
@@ -46,6 +58,13 @@ subprojects {
     }
 
     dependencies {
+        // JSpecify
+        implementation "org.jspecify:jspecify:${jspecifyVersion}"
+
+        // Error Prone
+        errorprone "com.google.errorprone:error_prone_core:${errorproneVersion}"
+        errorprone "com.uber.nullaway:nullaway:${nullawayVersion}"
+
         // Lombok
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -70,27 +89,6 @@ subprojects {
     spotless {
         java {
             googleJavaFormat("${googleJavaFormatVersion}")
-        }
-    }
-
-    apply plugin: 'com.github.spotbugs'
-    spotbugs {
-        excludeFilter = file("${rootDir}/tools/spotbugs/exclude.xml")
-    }
-
-    spotbugsMain {
-        reports.create("html") {
-            required = true
-            outputLocation = layout.buildDirectory.file("reports/spotbugs.html")
-            setStylesheet("fancy-hist.xsl")
-        }
-    }
-
-    spotbugsTest {
-        reports.create("html") {
-            required = true
-            outputLocation = layout.buildDirectory.file("reports/spotbugs-test.html")
-            setStylesheet("fancy-hist.xsl")
         }
     }
 

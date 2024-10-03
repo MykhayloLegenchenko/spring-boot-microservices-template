@@ -25,8 +25,9 @@ public class DataUtils {
    */
   public static Sort parseSort(@Nullable String sort, Set<String> allowedFields)
       throws BadRequestException {
+
     var order = parseSortOrder(sort, allowedFields);
-    return order != null ? Sort.by(parseSortOrder(sort, allowedFields)) : Sort.unsorted();
+    return order != null ? Sort.by(order) : Sort.unsorted();
   }
 
   /**

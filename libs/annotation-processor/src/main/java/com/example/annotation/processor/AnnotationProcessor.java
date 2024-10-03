@@ -42,7 +42,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.RELEASE_21;
+    return SourceVersion.RELEASE_23;
   }
 
   @Override
@@ -51,19 +51,17 @@ public class AnnotationProcessor extends AbstractProcessor {
       return false;
     }
 
-    var result = false;
     for (var annotation : annotations) {
       var processors = getProcessors(annotation);
 
       for (var element : getElements(roundEnv, annotation)) {
         for (var processor : processors) {
           processor.process(context, annotation, element);
-          result = true;
         }
       }
     }
 
-    return result;
+    return false;
   }
 
   private static Set<? extends Element> getElements(

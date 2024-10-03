@@ -25,7 +25,6 @@ public class ClientResponseException extends ResponseStatusException {
 
   @Override
   public String getMessage() {
-    super.getMessage();
     var reason = getReason();
     return originalStatus + (reason != null ? " \"" + reason + "\"" : "") + " " + error;
   }

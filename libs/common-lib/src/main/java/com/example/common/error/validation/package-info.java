@@ -1,6 +1,6 @@
 @NonNullApi
 @NonNullFields
-package com.example.client.users.auth.dto;
+package com.example.common.error.validation;
 
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.NonNullFields;

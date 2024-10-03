@@ -108,8 +108,8 @@ class ClientInterfaceProcessor {
     @Override
     public void process(
         AnnotationProcessorContext context, TypeElement annotation, Element element) {
-      var processor = new ClientInterfaceProcessor(context, annotation, element);
-      processor.process();
+
+      new ClientInterfaceProcessor(context, annotation, element).process();
     }
   }
 
@@ -347,7 +347,7 @@ class ClientInterfaceProcessor {
   private void checkMethod(ExecutableElement method) {
     var modifiers = method.getModifiers();
     if (modifiers.size() != 2
-        || !modifiers.contains(Modifier.PUBLIC) && !modifiers.contains(Modifier.ABSTRACT)) {
+        || (!modifiers.contains(Modifier.PUBLIC) && !modifiers.contains(Modifier.ABSTRACT))) {
       printError("Method should be public abstract", method, null);
     }
 
@@ -361,11 +361,11 @@ class ClientInterfaceProcessor {
   private void checkNamedAnnotation(AnnotationMirror annotation, VariableElement param) {
     if (annotation.getElementValues().entrySet().stream()
         .noneMatch(
-            (entry -> {
+            entry -> {
               var name = entry.getKey().getSimpleName().toString();
               return ("name".equals(name) || "value".equals(name))
                   && !"\"\"".equals(entry.getValue().toString());
-            }))) {
+            })) {
       printError(
           "Annotation @{0} must have non-empty \"name\" or \"value\" attribute",
           param, annotation, annotation.getAnnotationType().asElement().getSimpleName());
@@ -410,7 +410,7 @@ class ClientInterfaceProcessor {
 
     return el != null
         ? el.getAnnotationMirrors().stream()
-            .filter(a -> annotationTypes.contains((a.getAnnotationType().asElement().toString())))
+            .filter(a -> annotationTypes.contains(a.getAnnotationType().asElement().toString()))
             .toList()
         : List.of();
   }

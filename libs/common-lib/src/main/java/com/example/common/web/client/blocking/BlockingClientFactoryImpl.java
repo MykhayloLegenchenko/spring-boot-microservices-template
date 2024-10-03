@@ -103,11 +103,13 @@ final class BlockingClientFactoryImpl implements BlockingClientFactory {
 
     return new ResponseErrorHandler() {
 
+      @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
         var status = response.getStatusCode();
         return status.is4xxClientError() || status.is5xxServerError();
       }
 
+      @Override
       public void handleError(ClientHttpResponse response) throws IOException {
         var error = bodyExtractor.extractData(response);
         if (error != null) {

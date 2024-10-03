@@ -1,4 +1,4 @@
-package com.example.service.users;
+package com.example.service.users.auth;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,8 +8,10 @@ import com.example.client.users.auth.dto.AuthResponse;
 import com.example.client.users.auth.dto.LoginRequest;
 import com.example.client.users.auth.dto.RefreshRequest;
 import com.example.common.web.client.blocking.BlockingClientFactory;
+import com.example.service.users.UsersServiceApplication;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = UsersServiceApplication.class)
+@NullUnmarked
 class AuthApiTests {
   private static AuthBlockingClient client;
 

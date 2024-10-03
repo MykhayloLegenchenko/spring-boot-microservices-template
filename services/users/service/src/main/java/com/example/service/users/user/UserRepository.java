@@ -24,7 +24,7 @@ public interface UserRepository extends ExtendedJpaRepository<UserEntity, Long> 
     }
 
     static Specification<UserEntity> byEmail(String email) {
-      return ((root, query, builder) -> builder.equal(root.get(UserEntity_.email), email));
+      return (root, query, builder) -> builder.equal(root.get(UserEntity_.email), email);
     }
 
     static Specification<UserEntity> byDeletedAt(@Nullable Instant deletedAt) {

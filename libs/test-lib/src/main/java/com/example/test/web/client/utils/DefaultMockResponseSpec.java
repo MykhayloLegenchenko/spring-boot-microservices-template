@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
 /** Helper record for JSON deserialization of MockResponseSpec instances. */
+@SuppressWarnings("ArrayRecordComponent")
 record DefaultMockResponseSpec(
     @Nullable HttpMethod method,
     @Nullable URI url,
@@ -21,6 +22,7 @@ record DefaultMockResponseSpec(
     @NotNull @Valid Response response)
     implements MockResponseSpec {
 
+  @Override
   public boolean test(HttpMethod method, URI url, HttpHeaders headers, byte[] body) {
     return checkMethod(method) && checkUrl(url) && checkHeaders(headers) && checkBody(body);
   }

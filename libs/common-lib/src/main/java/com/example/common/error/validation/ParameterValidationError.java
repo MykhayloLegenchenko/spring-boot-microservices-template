@@ -8,10 +8,11 @@ import org.springframework.lang.Nullable;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class ParameterValidationError extends ValidationError {
-  private final String parameter;
+  @Nullable private final String parameter;
   @Nullable private final Object value;
 
-  public ParameterValidationError(String parameter, @Nullable Object value, String reason) {
+  public ParameterValidationError(
+      @Nullable String parameter, @Nullable Object value, String reason) {
     super(reason);
 
     this.parameter = parameter;
