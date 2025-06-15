@@ -1,0 +1,32 @@
+/*
+ * Configuration for Reactive Web microservices.
+ */
+
+//file:noinspection GrUnresolvedAccess
+import org.gradle.internal.os.OperatingSystem
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Spring Cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${springDocOpenApiStarterVersion}"
+
+    // Fixes error "Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider" on MacOS.
+    var os = OperatingSystem.current()
+    if (os.isMacOsX() && os.getArch() == 'aarch64') {
+        def nettyVersion = dependencyManagement.managedVersions['io.netty:netty-all']
+        runtimeOnly "io.netty:netty-resolver-dns-native-macos:${nettyVersion}:osx-aarch_64"
+    }
+
+    // Test
+    testImplementation 'io.projectreactor:reactor-test'
+}

@@ -1,0 +1,8 @@
+services:
+  broker:
+    container_name: broker
+    image: apache/kafka:latest
+    ports:
+      - '9092:9092'
+    networks:
+      - template-network

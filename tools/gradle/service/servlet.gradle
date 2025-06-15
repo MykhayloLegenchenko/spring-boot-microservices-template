@@ -1,0 +1,21 @@
+/**
+ * Configuration for Web microservices modules.
+ */
+
+//file:noinspection GrUnresolvedAccess
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocOpenApiStarterVersion}"
+}

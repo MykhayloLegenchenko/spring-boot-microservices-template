@@ -1,0 +1,57 @@
+{
+  "method": "GET",
+  "url": "https://api.weatherapi.com/v1/current.json?key=testApiKey&q=Odesa%2C%20Ukraine",
+  "response": {
+    "status": "OK",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "location": {
+        "name": "Odesa",
+        "region": "Odes'ka Oblast'",
+        "country": "Ukraine",
+        "lat": 46.47,
+        "lon": 30.73,
+        "tz_id": "Europe/Kiev",
+        "localtime_epoch": 1722615641,
+        "localtime": "2024-08-02 19:20"
+      },
+      "current": {
+        "last_updated_epoch": 1722615300,
+        "last_updated": "2024-08-02 19:15",
+        "temp_c": 25.6,
+        "temp_f": 78.2,
+        "is_day": 1,
+        "condition": {
+          "text": "Sunny",
+          "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+          "code": 1000
+        },
+        "wind_mph": 15.2,
+        "wind_kph": 24.5,
+        "wind_degree": 188,
+        "wind_dir": "S",
+        "pressure_mb": 1007.0,
+        "pressure_in": 29.73,
+        "precip_mm": 0.0,
+        "precip_in": 0.0,
+        "humidity": 68,
+        "cloud": 22,
+        "feelslike_c": 27.2,
+        "feelslike_f": 81.0,
+        "windchill_c": 25.6,
+        "windchill_f": 78.2,
+        "heatindex_c": 27.2,
+        "heatindex_f": 81.0,
+        "dewpoint_c": 19.2,
+        "dewpoint_f": 66.6,
+        "vis_km": 10.0,
+        "vis_miles": 6.0,
+        "uv": 7.0,
+        "gust_mph": 20.8,
+        "gust_kph": 33.5
+      }
+    }
+  }
+}

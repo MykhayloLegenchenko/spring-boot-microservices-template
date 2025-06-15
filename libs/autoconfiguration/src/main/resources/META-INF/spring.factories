@@ -1,0 +1,3 @@
+# Environment PostProcessor
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.example.autoconfigure.context.config.AutoconfigurationEnvironmentPostProcessor

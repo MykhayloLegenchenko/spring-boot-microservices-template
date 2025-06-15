@@ -1,0 +1,5 @@
+com.example.autoconfigure.swagger.SwaggerAutoConfiguration
+com.example.autoconfigure.web.reactive.error.ReactiveResponseEntityExceptionHandler
+com.example.autoconfigure.web.reactive.security.ReactiveSecurityAutoConfiguration
+com.example.autoconfigure.web.servlet.error.ServletResponseEntityExceptionHandler
+com.example.autoconfigure.web.servlet.security.ServletSecurityAutoConfiguration

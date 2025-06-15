@@ -1,0 +1,11 @@
+plugins {
+	id 'java-library'
+}
+
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+	// Google AutoService
+	annotationProcessor "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
+	compileOnly "com.google.auto.service:auto-service-annotations:${googleAutoServiceVersion}"
+}

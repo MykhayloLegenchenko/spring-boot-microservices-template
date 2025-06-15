@@ -1,0 +1,35 @@
+// Uncomment to enable offline mode
+//startParameter.offline=true
+
+rootProject.name = 'spring-boot-microservices-template'
+
+static List<File> findDirs(File f) {
+    return f.listFiles().findAll() { it.isDirectory() && !it.name.endsWith(".bak") }
+}
+
+def includeDirectoryProjects(String dirName, boolean services) {
+    findDirs(rootDir.toPath().resolve(dirName).toFile()).each { f ->
+        def name = ":" + f.name
+
+        if (services) {
+            findDirs(f).each { c ->
+                def projectName = name + '-' + c.name
+
+                include projectName
+                project(projectName).projectDir = c
+            }
+        } else {
+            include name
+            project(name).projectDir = f
+        }
+    }
+}
+
+// Include projects from libs directory
+includeDirectoryProjects('libs', false)
+
+// Include projects from cloud directory
+includeDirectoryProjects('cloud', false)
+
+// Include projects from services directory
+includeDirectoryProjects('services', true)

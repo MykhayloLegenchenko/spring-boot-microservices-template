@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    include: mysql
+
+  application:
+    name: users-service

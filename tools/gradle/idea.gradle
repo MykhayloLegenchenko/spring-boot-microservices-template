@@ -1,0 +1,67 @@
+//file:noinspection GrUnresolvedAccess
+apply plugin: 'org.jetbrains.gradle.plugin.idea-ext'
+
+idea {
+    module {
+        // Download dependency sources
+        downloadSources = true
+    }
+
+    project {
+        settings {
+            compiler {
+                javac {
+                    // Compiler JVM args
+                    javacAdditionalOptions = compilerJvmArgs.join(' ')
+                }
+            }
+        }
+    }
+}
+
+tasks.register('generateIdeaSettings') {
+    def ideaDir = new File('.idea')
+
+    doLast {
+        if (ideaDir.exists()) {
+            println('IDEA settings already exist.')
+            return
+        }
+
+        ideaDir.mkdir()
+
+        // Configure Spring Boot run configuration
+        def file = new File(ideaDir, 'workspace.xml')
+        file << """<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <component name="RunManager">
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
+      <option name="VM_PARAMETERS" value="-javaagent:\$PROJECT_DIR\$/tools/opentelemetry/opentelemetry-javaagent.jar -Dotel.javaagent.configuration-file=\$PROJECT_DIR\$/tools/opentelemetry/local.properties -Dotel.javaagent.extensions=\$PROJECT_DIR\$/libs/opentelemetry-extension/build/libs/opentelemetry-extension-0.0.1-SNAPSHOT.jar"/>
+    </configuration>
+  </component>
+</project>
+"""
+
+        // Enable Google Java Format plugin
+        file = new File(ideaDir, 'google-java-format.xml')
+        file << """<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GoogleJavaFormatSettings">
+    <option name="enabled" value="true" />
+  </component>
+</project>
+"""
+
+        // Use JSpecify nullable annotations
+        file = new File(ideaDir, 'misc.xml')
+        file << """<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="org.jspecify.annotations.Nullable" />
+    <option name="myDefaultNotNull" value="org.jspecify.annotations.NonNull" />
+  </component>
+</project>
+"""
+    }
+}

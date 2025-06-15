@@ -1,0 +1,102 @@
+//file:noinspection GrUnresolvedAccess
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.liquibase:liquibase-core:${liquibaseVersion}"
+    }
+}
+
+plugins {
+    id 'com.diffplug.spotless' version "${spotlessVersion}" apply false
+    id 'net.ltgt.errorprone' version "${errorpronePluginVersion}" apply false
+    id 'org.jetbrains.gradle.plugin.idea-ext' version "${ideaExtPluginVersion}" apply false
+
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}" apply false
+
+    id 'org.liquibase.gradle' version "${liquibasePluginVersion}" apply false
+}
+
+// Project setup
+apply from: 'tools/gradle/setup.gradle'
+
+subprojects {
+    group = 'com.example'
+
+    apply plugin: 'java'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(24)
+        }
+    }
+
+    apply plugin: 'net.ltgt.errorprone'
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += compilerJvmArgs
+
+        // Error Prone
+        options.errorprone {
+            disableWarningsInGeneratedCode = true
+            option('NullAway:OnlyNullMarked', 'true')
+            option('NullAway:CustomContractAnnotations', 'org.springframework.lang.Contract')
+            disable('StringCaseLocaleUsage')
+        }
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+
+        testCompileOnly {
+            extendsFrom testAnnotationProcessor
+        }
+
+        testAnnotationProcessor {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    // Override Spring Boot dependencies versions
+    ext['junit-jupiter.version'] = junitJupiterVersion
+
+    dependencies {
+        // JSpecify
+        implementation "org.jspecify:jspecify:${jspecifyVersion}"
+
+        // Error Prone
+        errorprone "com.google.errorprone:error_prone_core:${errorproneVersion}"
+        errorprone "com.uber.nullaway:nullaway:${nullawayVersion}"
+
+        // Lombok
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        // MapStruct
+        annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+        // JUnit
+        testImplementation platform("org.junit:junit-bom:${junitJupiterVersion}")
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        java {
+            googleJavaFormat("${googleJavaFormatVersion}")
+        }
+    }
+
+    assemble.dependsOn tasks.spotlessApply
+}

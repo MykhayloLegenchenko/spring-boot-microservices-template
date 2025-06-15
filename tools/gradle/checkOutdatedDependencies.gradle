@@ -1,0 +1,119 @@
+import java.nio.charset.StandardCharsets
+import java.util.regex.Pattern
+
+class Dependency {
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+")
+
+    private String groupId
+    private String artifactId
+    private String version
+
+    private Dependency(String groupId, String artifactId, String version) {
+        this.groupId = groupId
+        this.artifactId = artifactId
+        this.version = version
+    }
+
+    static Dependency parse(String str) {
+        var split = str.split(":")
+        if (split.length == 2) {
+            return new Dependency(null, split[0], split[1])
+        } else if (split.length == 3) {
+            return new Dependency(split[0], split[1], split[2])
+        } else {
+            throw new IllegalArgumentException("Invalid dependency format: " + str)
+        }
+    }
+
+    String version() {
+        return version
+    }
+
+    @Override
+    String toString() {
+        var sb = new StringBuilder()
+        if (groupId != null) {
+            sb.append(groupId)
+            sb.append(':')
+        }
+
+        sb.append(artifactId)
+        sb.append(':')
+        sb.append(version)
+
+        return sb.toString()
+    }
+
+    String latestVersion() throws IOException {
+        var uri =
+                groupId == null
+                        ? String.format(
+                        "https://plugins.gradle.org/m2/%s/%s.gradle.plugin/maven-metadata.xml",
+                        artifactId.replace('.', '/'), artifactId)
+                        : String.format(
+                        "https://repo1.maven.org/maven2/%s/%s/maven-metadata.xml",
+                        groupId.replace('.', '/'), artifactId)
+
+        var content = new StringBuilder()
+        try (var scanner = new Scanner(URI.create(uri).toURL().openStream(), StandardCharsets.UTF_8)) {
+            while (scanner.hasNextLine()) {
+                if (!content.isEmpty()) {
+                    content.append('\n')
+                }
+
+                content.append(scanner.nextLine())
+            }
+        }
+
+        var matcher = VERSION_PATTERN.matcher(content)
+        if (!matcher.find()) {
+            throw new IllegalArgumentException(
+                    String.format("Can't parse latest dependency version.\nURL: %s\n%s", uri, content))
+        }
+
+        return matcher.group(matcher.groupCount())
+    }
+}
+
+var DEPENDENCIES = [
+        "com.google.errorprone:error_prone_core:${errorproneVersion}",
+        "net.ltgt.errorprone:${errorpronePluginVersion}",
+        "org.jetbrains.gradle.plugin.idea-ext:${ideaExtPluginVersion}",
+        "com.google.auto.service:auto-service:${googleAutoServiceVersion}",
+        "com.google.googlejavaformat:google-java-format:${googleJavaFormatVersion}",
+        "org.jspecify:jspecify:${jspecifyVersion}",
+        "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}",
+        "org.liquibase:liquibase-groovy-dsl:${liquibaseGroovyDslVersion}",
+        "org.liquibase.gradle:${liquibasePluginVersion}",
+        "org.liquibase:liquibase-core:${liquibaseVersion}",
+        "org.projectlombok:lombok:${lombokVersion}",
+        "org.mapstruct:mapstruct-processor:${mapstructVersion}",
+        "com.uber.nullaway:nullaway:${nullawayVersion}",
+        "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:${opentelemetryJavaagentVersion}",
+        "io.opentelemetry:opentelemetry-bom:${opentelemetrySdkVersion}",
+        "info.picocli:picocli:${picocliVersion}",
+        "com.diffplug.spotless:${spotlessVersion}",
+        "org.springframework.boot:spring-boot:${springBootVersion}",
+        "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}",
+        "io.spring.dependency-management:${springDependencyManagementVersion}",
+        "org.springdoc:springdoc-openapi-starter-common:${springDocOpenApiStarterVersion}"
+]
+
+tasks.register('checkOutdatedDependencies') {
+    doLast {
+        def upToDate = true
+
+        for (var d : DEPENDENCIES) {
+            var dependency = Dependency.parse(d)
+            var latestVersion = dependency.latestVersion()
+            if (dependency.version() != latestVersion) {
+                upToDate = false
+                printf('Found outdated dependency %s -> %s\n', dependency, latestVersion)
+            }
+        }
+
+        if (upToDate) {
+            println('There is no outdated dependencies.')
+        }
+    }
+}

@@ -1,0 +1,13 @@
+/*
+ * Base configuration for library modules.
+ */
+
+//file:noinspection GrUnresolvedAccess
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java-library'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}

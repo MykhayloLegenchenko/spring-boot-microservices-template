@@ -1,0 +1,49 @@
+spring:
+  threads:
+    virtual:
+      enabled: true
+
+  web:
+    locale-resolver: fixed
+    locale: en_US
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${services.discovery}/eureka
+
+    healthcheck:
+      enabled: true
+
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
+
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 15
+
+auth:
+  jwt:
+    issuer: https://example.com
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[${spring.application.name:},%X{trace_id:-},%X{span_id:-},%X{trace_flags:-}]"
+
+  level:
+    com:
+      netflix:
+        discovery: warn
+        eureka: warn
