@@ -18,7 +18,7 @@ import org.springframework.util.ClassUtils;
 public class AutoconfigurationEnvironmentPostProcessor
     implements EnvironmentPostProcessor, Ordered {
 
-  /** Order of post processor, set to run before {@link ConfigDataEnvironmentPostProcessor}. */
+  /** Run before {@link ConfigDataEnvironmentPostProcessor}. */
   public static final int ORDER = ConfigDataEnvironmentPostProcessor.ORDER - 1;
 
   @Override

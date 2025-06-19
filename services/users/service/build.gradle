@@ -5,6 +5,7 @@ ext {
 apply from: "${rootDir}/tools/gradle/service/base.gradle"
 apply from: "${rootDir}/tools/gradle/service/servlet.gradle"
 apply from: "${rootDir}/tools/gradle/service/mysql.gradle"
+apply from: "${rootDir}/tools/gradle/service/kafka.gradle"
 
 version = '0.0.1-SNAPSHOT'
 
@@ -12,3 +13,9 @@ dependencies {
     // Project dependencies
     implementation project(':users-client')
 }
+
+//test {
+//    testLogging {
+//        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+//    }
+//}

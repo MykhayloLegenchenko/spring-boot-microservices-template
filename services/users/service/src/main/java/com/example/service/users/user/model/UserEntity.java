@@ -24,6 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.Nullable;
 
 @Getter
@@ -50,6 +51,10 @@ public class UserEntity {
   @CreationTimestamp
   @Temporal(TemporalType.TIMESTAMP)
   private Instant createdAt;
+
+  @UpdateTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  private Instant updatedAt;
 
   @JdbcType(NullableTimestampJdbcType.class)
   private Instant deletedAt;

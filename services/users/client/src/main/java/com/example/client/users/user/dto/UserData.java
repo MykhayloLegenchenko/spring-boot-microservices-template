@@ -13,4 +13,6 @@ public interface UserData {
   String lastName();
 
   Instant createdAt();
+
+  Instant updatedAt();
 }

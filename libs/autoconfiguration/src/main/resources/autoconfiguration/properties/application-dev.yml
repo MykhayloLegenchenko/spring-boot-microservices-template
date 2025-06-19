@@ -16,4 +16,4 @@ logging:
     io:
       opentelemetry:
         exporter:
-          internal: off
+          internal: OFF

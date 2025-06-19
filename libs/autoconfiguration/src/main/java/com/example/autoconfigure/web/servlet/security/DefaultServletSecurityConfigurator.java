@@ -48,7 +48,7 @@ public class DefaultServletSecurityConfigurator implements ServletSecurityConfig
   /**
    * Configures HTTP request authorization rules.
    *
-   * @implSpec This implementation allow public access to actuator and swagger endpoints, any other
+   * @implSpec This implementation allows public access to actuator and swagger endpoints, any other
    *     requests require an authenticated user. It also calls {@link
    *     #customAuthorizationRules(AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry)}
    *     for custom configuration.

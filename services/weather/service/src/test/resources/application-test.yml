@@ -6,4 +6,4 @@ api:
 #logging:
 #  level:
 #    com:
-#      example: debug
+#      example: DEBUG

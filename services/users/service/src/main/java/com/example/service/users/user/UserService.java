@@ -1,48 +1,35 @@
 package com.example.service.users.user;
 
+import static com.example.client.users.user.dto.UserEvent.TOPIC;
+import static com.example.client.users.user.dto.UserEvent.Type.*;
 import static com.example.service.users.user.UserRepository.Spec.*;
-import static java.util.function.Predicate.not;
 
-import com.example.client.users.user.dto.CountUsersRequest;
-import com.example.client.users.user.dto.FindUsersFilter;
-import com.example.client.users.user.dto.FindUsersRequest;
-import com.example.client.users.user.dto.RegisterUserRequest;
-import com.example.client.users.user.dto.UpdateUserRequest;
-import com.example.client.users.user.dto.UserData;
-import com.example.client.users.user.dto.UserDto;
-import com.example.client.users.user.dto.UserDtoEx;
+import com.example.client.users.user.dto.*;
 import com.example.common.data.DataUtils;
 import com.example.common.data.OffsetPageRequest;
 import com.example.common.data.jpa.JpaUtils;
 import com.example.common.dto.CountResult;
+import com.example.common.error.exception.BadRequestException;
 import com.example.common.error.exception.NotFoundException;
 import com.example.service.users.role.RoleRepository;
 import com.example.service.users.role.model.RoleEntity;
 import com.example.service.users.user.model.UserEntity;
 import com.example.service.users.user.model.UserEntity_;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.EscapeCharacter;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@SuppressWarnings("FutureReturnValueIgnored")
 public class UserService {
   private static final String USER_NOT_FOUND = "User is not found.";
   private static final Set<String> SORT_FIELDS =
@@ -58,8 +46,9 @@ public class UserService {
           .map(Attribute::getName)
           .collect(Collectors.toSet());
 
-  private final EntityManager em;
   private final PasswordEncoder passwordEncoder;
+  private final EntityManager em;
+  private final KafkaTemplate<String, UserEvent> userKafkaTemplate;
   private final UserMapper userMapper;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
@@ -73,18 +62,23 @@ public class UserService {
 
     private final boolean admin;
 
-    public boolean isSuper() {
-      return this == SUPER;
+    public boolean notSuper() {
+      return this != SUPER;
     }
   }
 
   @Transactional
   public UserDto registerUser(RegisterUserRequest request) {
     var user = UserEntity.createForInsert();
-    userMapper.update(user, request);
 
+    userMapper.update(user, request);
     user.setPassword(passwordEncoder.encode(request.password()));
     save(user);
+
+    userKafkaTemplate.send(
+        TOPIC,
+        user.getUuid().toString(),
+        new UserEvent(UserEvent.Type.REGISTER, userMapper.toUserDtoEx(user)));
 
     return userMapper.toUserDto(user);
   }
@@ -99,9 +93,9 @@ public class UserService {
     var user = select.from(UserEntity.class);
     select.select(user);
 
-    var predicates = getSearchPredicates(request, cb, user);
-    if (predicates.length > 0) {
-      select.where(cb.and(predicates));
+    var predicate = byUsersFilter(request).toPredicate(user, select, cb);
+    if (predicate != null) {
+      select.where(predicate);
     }
 
     var pageRequest =
@@ -127,25 +121,18 @@ public class UserService {
   }
 
   public CountResult countUsers(CountUsersRequest request) {
-    var cb = em.getCriteriaBuilder();
-    var cq = cb.createQuery(Long.class);
-    var users = cq.from(UserEntity.class);
-    cq.select(cb.count(users));
-
-    var predicates = getSearchPredicates(request, cb, users);
-    if (predicates.length > 0) {
-      cq.where(cb.and(predicates));
-    }
-
-    return new CountResult(em.createQuery(cq).getSingleResult());
+    var count = userRepository.count(byUsersFilter(request));
+    return new CountResult(count);
   }
 
   @Transactional
   public UserData updateUser(UUID uuid, UpdateUserRequest request, Access access) {
     var user = findUser(byUuid(uuid), access, false);
-
     userMapper.update(user, request);
     save(user);
+
+    userKafkaTemplate.send(
+        TOPIC, user.getUuid().toString(), new UserEvent(UPDATE, userMapper.toUserDtoEx(user)));
 
     return toUserDto(user, access);
   }
@@ -153,15 +140,23 @@ public class UserService {
   @Transactional
   public void setUserEnabled(UUID uuid, boolean enabled) {
     var user = findUser(byUuid(uuid), Access.ADMIN, false);
-
     user.setEnabled(enabled);
+    roleRepository.flush();
+
+    userKafkaTemplate.send(
+        TOPIC,
+        user.getUuid().toString(),
+        new UserEvent(enabled ? ENABLE : DISABLE, userMapper.toUserDtoEx(user)));
   }
 
   @Transactional
   public void deleteUser(UUID uuid) {
-    if (userRepository.softDelete(em, byUuid(uuid).and(byDeletedAt(null))) == 0) {
-      throw new NotFoundException(USER_NOT_FOUND);
-    }
+    var user = findUser(byUuid(uuid), Access.ADMIN, false);
+    user.setDeletedAt(Instant.now());
+    userRepository.flush();
+
+    userKafkaTemplate.send(
+        TOPIC, user.getUuid().toString(), new UserEvent(DELETE, userMapper.toUserDtoEx(user)));
   }
 
   public Set<String> getRoles(UUID uuid, Access access) {
@@ -173,106 +168,48 @@ public class UserService {
   @Transactional
   public void setRoles(UUID uuid, Set<String> roles, Access access) {
     var user = findUser(withRoles(byUuid(uuid)), access, true);
+    var userRoles = user.getRoles();
 
-    roles = roles.stream().map(String::toUpperCase).collect(Collectors.toSet());
+    roles.forEach(
+        role -> {
+          if (RoleRepository.RESERVED_NAMES.contains(role)) {
+            throw new BadRequestException(MessageFormat.format("Role name {0} is protected", role));
+          }
+        });
 
-    var existingRolesMap =
-        user.getRoles().stream()
-            .collect(Collectors.toMap(RoleEntity::getName, Function.identity()));
+    // Remove old roles
+    for (var it = userRoles.iterator(); it.hasNext(); ) {
+      var name = it.next().getName();
+      if (!roles.contains(name)) {
+        if (access.notSuper() && RoleRepository.PROTECTED_NAMES.contains(name)) {
+          throw new AccessDeniedException("Cannot remove protected role \"" + name + '"');
+        }
 
-    // Only superuser can add/remove protected roles
-    if (!access.isSuper()) {
-      checkProtectedRoles(existingRolesMap, roles);
-    }
-
-    addNewRoles(user, existingRolesMap, roles);
-    removeOldRoles(user, existingRolesMap, roles);
-  }
-
-  private void checkProtectedRoles(Map<String, RoleEntity> existingRolesMap, Set<String> roles) {
-    for (var name : RoleRepository.PROTECTED_NAMES) {
-      if (roles.contains(name) && !existingRolesMap.containsKey(name)) {
-        throw new AccessDeniedException("Cannot add protected role \"" + name + '"');
-      } else if (existingRolesMap.containsKey(name) && !roles.contains(name)) {
-        throw new AccessDeniedException("Cannot remove protected role \"" + name + '"');
+        it.remove();
       }
     }
-  }
 
-  private void addNewRoles(
-      UserEntity user, Map<String, RoleEntity> existingRolesMap, Set<String> roles) {
+    // Add new roles
+    var newRoles = new ArrayList<String>();
+    for (String name : roles) {
+      if (userRoles.stream().noneMatch(r -> name.equals(r.getName()))) {
+        if (access.notSuper() && RoleRepository.PROTECTED_NAMES.contains(name)) {
+          throw new AccessDeniedException("Cannot add protected role \"" + name + '"');
+        }
 
-    var newRoles =
-        roles.stream().filter(not(existingRolesMap::containsKey)).collect(Collectors.toSet());
-    if (newRoles.isEmpty()) {
-      return;
-    }
-
-    var newRoleEntities = roleRepository.findAll(RoleRepository.Spec.byNames(newRoles));
-    if (newRoles.size() != newRoleEntities.size()) {
-      var notFoundRoleNames = new HashSet<>(newRoles);
-      notFoundRoleNames.removeAll(
-          newRoleEntities.stream().map(RoleEntity::getName).collect(Collectors.toSet()));
-
-      throw new NotFoundException("Cannot find roles " + notFoundRoleNames);
-    }
-
-    var session = em.unwrap(Session.class);
-    session.doWork(con -> insertNewRoles(con, user, newRoleEntities));
-  }
-
-  private void insertNewRoles(Connection con, UserEntity user, List<RoleEntity> roles)
-      throws SQLException {
-    try (var ps =
-        con.prepareStatement("INSERT INTO `user_role` (`user_id`, `role_id`) VALUES (?, ?)")) {
-
-      ps.setLong(1, user.getId());
-      for (var role : roles) {
-        ps.setLong(2, role.getId());
-        ps.addBatch();
+        newRoles.add(name);
       }
-
-      ps.executeBatch();
-    }
-  }
-
-  private void removeOldRoles(
-      UserEntity user, Map<String, RoleEntity> existingRolesMap, Set<String> roles) {
-    var deleteRoleIds =
-        existingRolesMap.values().stream()
-            .filter(r -> !roles.contains(r.getName()))
-            .map(RoleEntity::getId)
-            .toList();
-    if (!deleteRoleIds.isEmpty()) {
-      userRepository.deleteRolesByIds(user.getId(), deleteRoleIds);
-    }
-  }
-
-  private static Predicate[] getSearchPredicates(
-      FindUsersFilter request, CriteriaBuilder cb, Root<UserEntity> users) {
-    var predicates = new ArrayList<Predicate>();
-    if (request.search() != null) {
-      var search = '%' + EscapeCharacter.DEFAULT.escape(request.search()) + '%';
-      predicates.add(
-          cb.or(
-              cb.like(users.get(UserEntity_.email), search),
-              cb.like(users.get(UserEntity_.firstName), search),
-              cb.like(users.get(UserEntity_.lastName), search)));
     }
 
-    if (request.enabled() != null) {
-      predicates.add(cb.equal(users.get(UserEntity_.enabled), request.enabled()));
-    }
+    userRoles.addAll(roleRepository.findAll(RoleRepository.Spec.byNames(newRoles)));
 
-    if (request.deleted() != null) {
-      var deletedAt = users.get(UserEntity_.deletedAt);
-      predicates.add(
-          Boolean.TRUE.equals(request.deleted())
-              ? cb.notEqual(deletedAt, JpaUtils.SOFT_NULL_INSTANT)
-              : cb.equal(deletedAt, JpaUtils.SOFT_NULL_INSTANT));
-    }
-
-    return predicates.toArray(Predicate[]::new);
+    userKafkaTemplate.send(
+        TOPIC,
+        user.getUuid().toString(),
+        new UserEvent(
+            SET_ROLES,
+            userMapper.toUserDtoEx(user),
+            user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet())));
   }
 
   private UserEntity findUser(Specification<UserEntity> spec, Access access, boolean fetch) {

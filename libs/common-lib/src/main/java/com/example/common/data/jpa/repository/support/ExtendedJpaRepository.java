@@ -48,7 +48,7 @@ public interface ExtendedJpaRepository<T, ID>
   void persistAll(Iterable<T> entities);
 
   /**
-   * Persists all entities and flushes changes instantly.
+   * Persists all entities and flushes all changes instantly.
    *
    * @param entities entities to be persisted. Must not be {@literal null}
    */

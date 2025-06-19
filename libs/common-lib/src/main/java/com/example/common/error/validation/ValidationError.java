@@ -1,9 +1,8 @@
 package com.example.common.error.validation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import java.util.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
@@ -24,6 +23,7 @@ public class ValidationError {
   public static List<ValidationError> getErrors(
       Throwable ex, MessageSource messageSource, Locale locale) {
     return switch (ex) {
+      case ConstraintViolationException e -> getErrors(e.getConstraintViolations());
       case BindException e -> getErrors(e.getAllErrors(), messageSource, locale);
       case BindValidationException e ->
           getErrors(e.getValidationErrors().getAllErrors(), messageSource, locale);
@@ -31,6 +31,17 @@ public class ValidationError {
       case WebExchangeBindException e -> getErrors(e.getAllErrors(), messageSource, locale);
       default -> Collections.emptyList();
     };
+  }
+
+  private static List<ValidationError> getErrors(Set<ConstraintViolation<?>> constraintViolations) {
+    var result = new ArrayList<ValidationError>();
+    for (var cv : constraintViolations) {
+      result.add(
+          new PropertyValidationError(
+              cv.getPropertyPath().toString(), cv.getInvalidValue(), cv.getMessage()));
+    }
+
+    return result;
   }
 
   private static List<ValidationError> getErrors(

@@ -37,7 +37,7 @@ public class SecurityUtils {
    * Returns UUID of the logged-in user.
    *
    * @param context security context
-   * @throws AccessDeniedException if the user is not logged-in
+   * @throws AccessDeniedException if the user is not logged in
    */
   public static UUID getUserUUID(SecurityContext context) throws AccessDeniedException {
     var auth = context.getAuthentication();

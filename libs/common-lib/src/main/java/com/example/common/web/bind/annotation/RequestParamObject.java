@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
  * Annotation which indicates that a method parameter object fields should be bound to a web request
  * parameters.
  *
- * <p>Sorurce:
- *
  * <p>Handled by the {@link RequestParamObjectArgumentResolver}
  */
 @Target(ElementType.PARAMETER)

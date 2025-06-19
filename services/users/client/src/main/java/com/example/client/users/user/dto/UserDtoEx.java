@@ -15,6 +15,8 @@ public record UserDtoEx(
     @Schema(description = "Last name of the user", example = "Doe") String lastName,
     @Schema(description = "User creation timestamp", example = "2023-11-11T06:19:11.018Z")
         Instant createdAt,
+    @Schema(description = "User update timestamp", example = "2023-11-11T06:19:11.018Z")
+        Instant updatedAt,
     @Schema(description = "User enabled flag", example = "true") boolean enabled,
     @Schema(description = "User deletion timestamp", example = "2023-11-11T06:19:11.018Z")
         @JsonInclude(JsonInclude.Include.NON_NULL)

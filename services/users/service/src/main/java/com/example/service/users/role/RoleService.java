@@ -1,11 +1,14 @@
 package com.example.service.users.role;
 
+import static com.example.client.users.role.dto.RoleEvent.TOPIC;
+import static com.example.client.users.role.dto.RoleEvent.Type.*;
 import static com.example.service.users.role.RoleRepository.PROTECTED_NAMES;
 import static com.example.service.users.role.RoleRepository.RESERVED_NAMES;
 import static com.example.service.users.role.RoleRepository.Spec.*;
 
 import com.example.client.users.role.dto.GetAllRolesRequest;
 import com.example.client.users.role.dto.RoleDto;
+import com.example.client.users.role.dto.RoleEvent;
 import com.example.common.data.DataUtils;
 import com.example.common.data.jpa.JpaUtils;
 import com.example.common.error.exception.BadRequestException;
@@ -16,21 +19,27 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@SuppressWarnings("FutureReturnValueIgnored")
 public class RoleService {
   private static final Set<String> SORT_PROPERTIES = Set.of("id", "name");
 
+  private final KafkaTemplate<String, RoleEvent> roleKafkaTemplate;
   private final RoleMapper roleMapper;
   private final RoleRepository roleRepository;
 
   @Transactional
   public RoleDto createRole(RoleDto request) {
-    return save(new RoleEntity(), request);
+    var result = save(new RoleEntity(), request);
+
+    roleKafkaTemplate.send(TOPIC, request.name(), new RoleEvent(CREATE, result));
+    return result;
   }
 
   public List<String> getAllRoles(GetAllRolesRequest request) {
@@ -43,11 +52,15 @@ public class RoleService {
   public RoleDto updateRole(String name, RoleDto request) {
     checkRoleName(name);
 
-    return save(
-        roleRepository
-            .findOne(byName(name))
-            .orElseThrow(() -> new NotFoundException("Role is not found.")),
-        request);
+    var result =
+        save(
+            roleRepository
+                .findOne(byName(name))
+                .orElseThrow(() -> new NotFoundException("Role is not found.")),
+            request);
+
+    roleKafkaTemplate.send(TOPIC, request.name(), new RoleEvent(UPDATE, result));
+    return result;
   }
 
   @Transactional
@@ -57,6 +70,8 @@ public class RoleService {
     if (roleRepository.delete(byName(name)) == 0) {
       throw new NotFoundException("Role is not found.");
     }
+
+    roleKafkaTemplate.send(TOPIC, name, new RoleEvent(DELETE, new RoleDto(name)));
   }
 
   private RoleDto save(RoleEntity role, RoleDto request) {

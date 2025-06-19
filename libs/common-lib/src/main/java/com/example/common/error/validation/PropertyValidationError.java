@@ -4,25 +4,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
-/** Parameter validation error object. */
+/** Property validation error object. */
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class ParameterValidationError extends ValidationError {
-  @Nullable private final String parameter;
+public class PropertyValidationError extends ValidationError {
+  private final String property;
   @Nullable private final Object value;
 
-  public ParameterValidationError(
-      @Nullable String parameter, @Nullable Object value, String reason) {
+  public PropertyValidationError(String property, @Nullable Object value, String reason) {
     super(reason);
 
-    this.parameter = parameter;
+    this.property = property;
     this.value = value;
   }
 
   @Override
   public String toString() {
-    return "ParameterValidationError(parameter="
-        + parameter
+    return "PropertyValidationError(property="
+        + property
         + ", value="
         + value
         + ", error="

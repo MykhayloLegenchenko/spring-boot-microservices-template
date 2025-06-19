@@ -45,5 +45,5 @@ logging:
   level:
     com:
       netflix:
-        discovery: warn
-        eureka: warn
+        discovery: WARN
+        eureka: WARN

@@ -26,3 +26,28 @@ spring:
   sql:
     init:
       platform: h2
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "kafka"
+  kafka:
+    bootstrap-servers:
+    consumer:
+      group-id: test
+
+logging:
+   level:
+     kafka: ERROR
+
+     org:
+       apache:
+         kafka: ERROR
+         zookeeper: ERROR
+
+     state:
+       change:
+         logger: ERROR
+
+

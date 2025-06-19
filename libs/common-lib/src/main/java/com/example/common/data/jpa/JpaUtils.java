@@ -70,7 +70,7 @@ public class JpaUtils {
    * href="https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/">article</a>
    *
    * <p>Returns the combined hash code of the entity ID and effective class. Seems like a better
-   * solution than the one in the article which only returns the hash code of the effective class.
+   * solution than the one in the article that only returns the hash code of the effective class.
    *
    * @param entity JPA entity
    * @param idExtractor id extractor function

@@ -10,6 +10,7 @@ CREATE TABLE `user`
     `last_name`  varchar(50)  NOT NULL,
     `password`   varchar(60)  NOT NULL,
     `created_at` datetime(6)  NOT NULL,
+    `updated_at` datetime(6)  NOT NULL,
     `deleted_at` datetime(6)  NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `user_uuid_uk` (`uuid`),
@@ -19,6 +20,7 @@ CREATE TABLE `user`
 INSERT INTO `user`
 VALUES (1, X'1001A9B7B4BA46D69CF41FEDC06439EC', 'admin@example.com', 1, 'System', 'Admin',
         '$2a$10$av3LcZg.Js0qL1p.ebofm.qhlKf9cNQM4WTs4lYNz68K69VzR5Gta', '2023-11-17 10:48:44.262405',
+        '2023-11-17 10:48:44.262405',
         '1000-01-01 00:00:00.000000');
 
 CREATE TABLE `role`

@@ -15,10 +15,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,6 +33,7 @@ import org.springframework.web.service.annotation.PutExchange;
 @ClientInterface
 @HttpExchange(url = "/api/v1/users")
 @Tag(name = "user", description = "Operations about users")
+@Validated
 public interface UserBlockingClient {
 
   @PostExchange
@@ -105,5 +108,6 @@ public interface UserBlockingClient {
   @SecurityRequirement(name = "default", scopes = "admin")
   void setRoles(
       @PathVariable("uuid") @Parameter(description = "UUID of the user") UUID uuid,
-      @RequestBody @Valid Set<@NotBlank String> roles);
+      @RequestBody @Valid
+          Set<@NotBlank @Pattern(regexp = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+){0,10}$") String> roles);
 }

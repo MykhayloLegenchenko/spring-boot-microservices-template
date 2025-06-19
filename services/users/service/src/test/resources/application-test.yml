@@ -1,3 +1,9 @@
+spring:
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "com.example.client.users.role.dto, com.example.client.users.user.dto"
+
 auth:
   jwt:
     refresh-token:
@@ -15,4 +21,4 @@ auth:
 #logging:
 #  level:
 #    com:
-#      example: debug
+#      example: DEBUG

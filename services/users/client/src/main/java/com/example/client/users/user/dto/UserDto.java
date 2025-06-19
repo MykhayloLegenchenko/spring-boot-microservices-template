@@ -12,5 +12,7 @@ public record UserDto(
     @Schema(description = "Fist name of the user", example = "John") String firstName,
     @Schema(description = "Last name of the user", example = "Doe") String lastName,
     @Schema(description = "User creation timestamp", example = "2023-11-11T06:19:11.018Z")
-        Instant createdAt)
+        Instant createdAt,
+    @Schema(description = "User update timestamp", example = "2023-11-11T06:19:11.018Z")
+        Instant updatedAt)
     implements UserData {}

@@ -2,6 +2,7 @@ package com.example.common.error;
 
 import com.example.common.error.validation.ValidationError;
 import io.opentelemetry.api.trace.Span;
+import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -93,10 +94,11 @@ public class ErrorUtils {
     }
 
     return switch (ex) {
-      case AccessDeniedException ignored -> HttpStatus.FORBIDDEN;
-      case AuthenticationException ignored -> HttpStatus.UNAUTHORIZED;
-      case BindException ignored -> HttpStatus.BAD_REQUEST;
-      case RestClientResponseException ignored -> HttpStatus.BAD_GATEWAY;
+      case AccessDeniedException _ -> HttpStatus.FORBIDDEN;
+      case AuthenticationException _ -> HttpStatus.UNAUTHORIZED;
+      case ConstraintViolationException _, BindException _ -> HttpStatus.BAD_REQUEST;
+      case RestClientResponseException _ -> HttpStatus.BAD_GATEWAY;
+
       default -> {
         if (WEB_CLIENT_PRESENT && ex instanceof WebClientException) {
           yield HttpStatus.BAD_REQUEST;

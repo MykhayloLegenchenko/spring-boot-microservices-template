@@ -40,7 +40,7 @@ public class DefaultReactiveSecurityConfigurator implements ReactiveSecurityConf
   /**
    * Configures the authorization rules for exchanges.
    *
-   * @implSpec This implementation allow public access to actuator and swagger endpoints, any other
+   * @implSpec This implementation allows public access to actuator and swagger endpoints, any other
    *     requests require an authenticated user. It also calls {@link
    *     #customAuthorizationRules(ServerHttpSecurity.AuthorizeExchangeSpec)} for custom
    *     configuration.

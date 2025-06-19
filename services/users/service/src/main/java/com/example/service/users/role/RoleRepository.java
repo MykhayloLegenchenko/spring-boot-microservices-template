@@ -16,11 +16,11 @@ public interface RoleRepository extends ExtendedJpaRepository<RoleEntity, Long> 
 
   interface Spec {
     static Specification<RoleEntity> byName(String name) {
-      return (root, query, builder) -> builder.equal(root.get(RoleEntity_.name), name);
+      return (root, query, cb) -> cb.equal(root.get(RoleEntity_.name), name);
     }
 
     static Specification<RoleEntity> byNames(Collection<String> names) {
-      return (root, query, builder) -> root.get(RoleEntity_.name).in(names);
+      return (root, query, cb) -> root.get(RoleEntity_.name).in(names);
     }
   }
 
