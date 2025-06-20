@@ -27,8 +27,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,6 +68,11 @@ public class UserService {
     public boolean notSuper() {
       return this != SUPER;
     }
+  }
+
+  @Bean
+  public NewTopic userTopic() {
+    return TopicBuilder.name(TOPIC).build();
   }
 
   @Transactional

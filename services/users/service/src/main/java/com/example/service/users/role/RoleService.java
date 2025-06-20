@@ -18,7 +18,10 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,11 @@ public class RoleService {
   private final KafkaTemplate<String, RoleEvent> roleKafkaTemplate;
   private final RoleMapper roleMapper;
   private final RoleRepository roleRepository;
+
+  @Bean
+  private NewTopic roleTopic() {
+    return TopicBuilder.name(TOPIC).build();
+  }
 
   @Transactional
   public RoleDto createRole(RoleDto request) {

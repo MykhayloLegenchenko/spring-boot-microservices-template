@@ -5,6 +5,7 @@ import static io.opentelemetry.sdk.trace.samplers.Sampler.alwaysOff;
 import static io.opentelemetry.sdk.trace.samplers.Sampler.alwaysOn;
 import static java.util.function.Predicate.not;
 
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Context;
@@ -29,6 +30,7 @@ import org.jspecify.annotations.Nullable;
  * <ul>
  *   <li>{@code exclude-sampler.log.enabled} whether to enable logging, default {@code false}
  *   <li>{@code exclude-sampler.server.paths} list of server path patterns to exclude, separated by
+ *       {@code ;}
  *   <li>{@code exclude-sampler.client.hosts} list of client request host patterns to exclude,
  *       separated by {@code ;}
  *   <li>{@code exclude-sampler.client.paths} list of client request path patterns to exclude,
@@ -36,6 +38,11 @@ import org.jspecify.annotations.Nullable;
  */
 @Log
 class ExcludeSampler implements Sampler {
+  private static final AttributeKey<String> URL_PATH_KEY = stringKey("url.path");
+  private static final AttributeKey<String> SERVER_ADDRESS_KEY = stringKey("server.address");
+  private static final AttributeKey<String> URL_FULL_KEY = stringKey("url.full");
+  private static final AttributeKey<String> DB_STATEMENT_KEY = stringKey("db.statement");
+
   private final boolean logEnabled;
   private final Sampler root;
   private final Sampler parent;
@@ -88,7 +95,7 @@ class ExcludeSampler implements Sampler {
       Attributes attributes,
       List<LinkData> parentLinks) {
 
-    var path = attributes.get(stringKey("url.path"));
+    var path = attributes.get(URL_PATH_KEY);
     if (matches(path, serverPaths)) {
       return parent.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
     }
@@ -104,17 +111,17 @@ class ExcludeSampler implements Sampler {
       Attributes attributes,
       List<LinkData> parentLinks) {
 
-    var host = attributes.get(stringKey("server.address"));
+    var host = attributes.get(SERVER_ADDRESS_KEY);
     if (matches(host, clientHosts)) {
       return parent.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
     }
 
-    var uri = getURI(attributes.get(stringKey("url.full")));
+    var uri = getURI(attributes.get(URL_FULL_KEY));
     if (uri != null && matches(uri.getPath(), clientPaths)) {
       return parent.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
     }
 
-    var dbStatement = attributes.get(stringKey("db.statement"));
+    var dbStatement = attributes.get(DB_STATEMENT_KEY);
     if (dbStatement != null) {
       return parent.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
     }
