@@ -7,9 +7,4 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        cloud:
-          config:
-            server:
-              environment: WARN
+    org.springframework.cloud.config.server.environment: WARN

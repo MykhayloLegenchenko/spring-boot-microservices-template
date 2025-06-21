@@ -40,14 +40,8 @@ spring:
 logging:
    level:
      kafka: ERROR
+     org.apache:
+       kafka: ERROR
+       zookeeper: ERROR
 
-     org:
-       apache:
-         kafka: ERROR
-         zookeeper: ERROR
-
-     state:
-       change:
-         logger: ERROR
-
-
+     state.change.logger: ERROR

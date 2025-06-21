@@ -13,7 +13,4 @@ services:
 
 logging:
   level:
-    io:
-      opentelemetry:
-        exporter:
-          internal: OFF
+    io.opentelemetry.exporter.internal: OFF

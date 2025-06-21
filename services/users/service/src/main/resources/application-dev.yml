@@ -24,9 +24,6 @@ auth:
 
 logging:
   level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        orm:
-          jdbc:
-            bind: TRACE
+    org.hibernate:
+      SQL: DEBUG
+      orm.jdbc.bind: TRACE

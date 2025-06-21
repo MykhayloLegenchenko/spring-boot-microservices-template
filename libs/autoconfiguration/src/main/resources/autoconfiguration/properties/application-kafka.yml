@@ -12,7 +12,4 @@ spring:
 
 logging:
   level:
-    org:
-      apache:
-        kafka:
-          clients: ERROR
+    org.apache.kafka.clients: ERROR

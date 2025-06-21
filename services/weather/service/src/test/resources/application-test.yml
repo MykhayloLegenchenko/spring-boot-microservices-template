@@ -5,5 +5,4 @@ api:
 
 #logging:
 #  level:
-#    com:
-#      example: DEBUG
+#    com.example: DEBUG

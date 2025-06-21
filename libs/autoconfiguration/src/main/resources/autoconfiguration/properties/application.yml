@@ -43,7 +43,4 @@ logging:
     correlation: "[${spring.application.name:},%X{trace_id:-},%X{span_id:-},%X{trace_flags:-}]"
 
   level:
-    com:
-      netflix:
-        discovery: WARN
-        eureka: WARN
+    com.netflix.discovery.eureka: WARN
