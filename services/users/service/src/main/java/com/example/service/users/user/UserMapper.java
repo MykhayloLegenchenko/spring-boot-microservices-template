@@ -12,7 +12,9 @@ import org.mapstruct.MappingTarget;
 @Mapper
 public interface UserMapper {
   @Mapping(target = "firstName", expression = "java(src.firstName().strip())")
-  @Mapping(target = "lastName", expression = "java(src.lastName().strip())")
+  @Mapping(
+      target = "lastName",
+      expression = "java(src.lastName() != null ? src.lastName().strip() : null)")
   @Mapping(target = "password", ignore = true)
   void update(@MappingTarget UserEntity entity, RegisterUserRequest src);
 

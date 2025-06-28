@@ -11,7 +11,7 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-/** Proxy for {@code Statement} objects. */
+/** Proxy for {@link Statement} objects. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 class StatementProxy implements InvocationHandler {
   private static final Set<String> UPDATE_METHODS = Set.of("executeUpdate", "executeBatch");

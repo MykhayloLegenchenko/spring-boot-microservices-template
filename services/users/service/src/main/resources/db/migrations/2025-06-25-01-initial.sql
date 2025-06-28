@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset misha:initial
+-- changeset legenchenko:initial
 CREATE TABLE `user`
 (
     `id`         bigint       NOT NULL AUTO_INCREMENT,
@@ -7,7 +7,7 @@ CREATE TABLE `user`
     `email`      varchar(100) NOT NULL,
     `enabled`    tinyint(1)   NOT NULL,
     `first_name` varchar(50)  NOT NULL,
-    `last_name`  varchar(50)  NOT NULL,
+    `last_name`  varchar(50),
     `password`   varchar(60)  NOT NULL,
     `created_at` datetime(6)  NOT NULL,
     `updated_at` datetime(6)  NOT NULL,

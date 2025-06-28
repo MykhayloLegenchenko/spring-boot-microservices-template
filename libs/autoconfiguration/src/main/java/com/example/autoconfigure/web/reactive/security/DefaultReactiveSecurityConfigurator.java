@@ -21,7 +21,7 @@ public class DefaultReactiveSecurityConfigurator implements ReactiveSecurityConf
   /**
    * Configures the given {@link ServerHttpSecurity} object.
    *
-   * @implSpec This implementation configures {@code ServerHttpSecurity} using overridable protected
+   * @implSpec This implementation configures {@link ServerHttpSecurity} using overridable protected
    *     class methods.
    */
   @Override

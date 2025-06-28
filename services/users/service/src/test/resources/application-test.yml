@@ -4,16 +4,16 @@ spring:
       properties:
         spring.json.trusted.packages: "com.example.client.users.role.dto, com.example.client.users.user.dto"
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: test-google-client-id
+            clientSecret: test-google-client-secret
+
 auth:
   jwt:
     refresh-token:
       ttl: 1800
-      secret: testRefreshSecret
-
-#logging:
-#   level:
-#    org.apache.hc.client5.http: DEBUG
-
-#logging:
-#  level:
-#    com.example: DEBUG
+      secret: test-refresh-secret

@@ -5,7 +5,7 @@ import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 @Builder(toBuilder = true)
-@Schema(description = "The find users request DTO")
+@Schema(description = "Find users request payload")
 public record GetAllRolesRequest(
     @Nullable @Schema(description = "Sort order. Fields: id, name", example = "name:desc")
         String sort) {}

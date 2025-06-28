@@ -51,13 +51,13 @@ public interface ReactiveClientFactory {
   ReactiveClientFactory factoryCustomizers(
       Consumer<List<Consumer<HttpServiceProxyFactory.Builder>>> configurer);
 
-  /** Clone this {@code ReactiveClientFactory}. */
+  /** Clone this {@link ReactiveClientFactory}. */
   ReactiveClientFactory duplicate();
 
   /** Creates a new reactive HTTP client. */
   <T> T createClient(Class<T> serviceType);
 
-  /** Creates a new {@code ReactiveClientFactory}. */
+  /** Creates a new {@link ReactiveClientFactory}. */
   static ReactiveClientFactory create(WebClient.Builder builder) {
     return new ReactiveClientFactoryImpl(builder);
   }

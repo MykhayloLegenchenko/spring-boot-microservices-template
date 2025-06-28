@@ -4,13 +4,20 @@ spring:
     username: user
     password: password
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: your-google-client-id
+            clientSecret: your-google-client-secret
+
 auth:
   jwt:
     access-token:
-      secret: accessSecret
-      ttl: 43200 # 300
-
+      secret: your-access-secret
+      ttl: 43200
 
     refresh-token:
-      secret: refreshSecret
-      ttl: 86400 # 1800
+      secret: your-refresh-secret
+      ttl: 86400

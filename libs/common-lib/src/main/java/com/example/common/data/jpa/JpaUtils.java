@@ -5,6 +5,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaQuery;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.AccessLevel;
@@ -83,23 +84,53 @@ public class JpaUtils {
   }
 
   /**
-   * Throws a {@link ConflictException} with the reason supplied by the {@code reasonSupplier} if
-   * the original exception {@code ex} is caused by a violation of the database constraint named
-   * {@code constraintName}. Otherwise, throws the original exception {@code ex}.
+   * Throws a {@link ConflictException} with a reason from the given {@code reasonSupplier} if the
+   * specified {@code constraintName} caused the given exception {@code ex}. Otherwise, rethrows the
+   * original exception.
    *
-   * <p>Provides clear error messages when database constraints are violated.
+   * <p>This utility helps produce clear, user-friendly error messages when database constraints are
+   * violated.
    *
-   * @param ex original exception
-   * @param constraintName constraint name
-   * @param reasonSupplier exception reason supplier
+   * @param ex the original exception
+   * @param constraintName the name of the database constraint to match
+   * @param reasonSupplier a supplier of the exception reason message; may be {@code null}
+   * @throws ConflictException if the exception was caused by the given constraint
    */
   public static void processConstraintViolation(
       RuntimeException ex, String constraintName, @Nullable Supplier<String> reasonSupplier) {
+
     if (checkConstraintName(ex, constraintName)) {
       throw new ConflictException(reasonSupplier != null ? reasonSupplier.get() : null, ex);
     } else {
       throw ex;
     }
+  }
+
+  /**
+   * Throws a {@link ConflictException} if the given exception {@code ex} is caused by a violation
+   * of one of the specified database constraints. The {@code constraints} map provides constraint
+   * names and their associated reason message suppliers.
+   *
+   * <p>If a matching constraint is found, the corresponding reason from the {@link Supplier} is
+   * used to construct the exception message. If no constraint matches, the original exception is
+   * rethrown.
+   *
+   * @param ex the original exception
+   * @param constraints a map of constraint names to optional reason suppliers; the supplier may be
+   *     {@code null}
+   * @throws ConflictException if the exception was caused by one of the given constraints
+   */
+  public static void processConstraintsViolation(
+      RuntimeException ex, Map<String, @Nullable Supplier<String>> constraints) {
+
+    for (var constraint : constraints.entrySet()) {
+      if (checkConstraintName(ex, constraint.getKey())) {
+        var reasonSupplier = constraint.getValue();
+        throw new ConflictException(reasonSupplier != null ? reasonSupplier.get() : null, ex);
+      }
+    }
+
+    throw ex;
   }
 
   /**

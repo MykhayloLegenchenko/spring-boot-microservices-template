@@ -2,5 +2,6 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
-    <include file="migrations/2023-11-17-01-initial.sql" relativeToChangelogFile="true"/>
+    <include file="migrations/2025-06-25-01-initial.sql" relativeToChangelogFile="true"/>
+    <include file="migrations/2025-06-26-01-add-user-client-registration-id.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

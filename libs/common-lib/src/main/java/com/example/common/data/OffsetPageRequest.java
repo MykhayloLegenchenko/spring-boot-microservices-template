@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-/** {@code Pageable} based on page offset. */
+/** {@link Pageable} based on page offset. */
 @EqualsAndHashCode
 public class OffsetPageRequest implements Pageable {
   private final long offset;

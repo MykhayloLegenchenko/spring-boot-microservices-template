@@ -2,6 +2,7 @@ package com.example.client.users.user.dto;
 
 import java.time.Instant;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 public interface UserData {
   UUID uuid();
@@ -10,7 +11,7 @@ public interface UserData {
 
   String firstName();
 
-  String lastName();
+  @Nullable String lastName();
 
   Instant createdAt();
 

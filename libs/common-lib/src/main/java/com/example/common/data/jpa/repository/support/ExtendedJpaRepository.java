@@ -143,7 +143,7 @@ public interface ExtendedJpaRepository<T, ID>
   void deleteById(ID id);
 
   /**
-   * Deletes the given entities in a batch which means it will create a single query.
+   * Deletes the given entities in a batch, which means it will create a single query.
    *
    * @see JpaRepository#deleteAllInBatch(Iterable)
    */

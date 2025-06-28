@@ -12,6 +12,13 @@ spring:
 #    properties:
 #      hibernate:
 #        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: your-google-client-id
+            clientSecret: your-google-client-secret
 
 auth:
   jwt:
@@ -19,7 +26,7 @@ auth:
       ttl: 43200
 
     refresh-token:
-      secret: refreshSecret
+      secret: your-refresh-secret
       ttl: 86400
 
 logging:

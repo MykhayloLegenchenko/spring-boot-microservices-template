@@ -3,6 +3,5 @@ api:
     apiKey: testApiKey
     url: https://api.weatherapi.com/v1
 
-#logging:
-#  level:
-#    com.example: DEBUG
+test:
+  mock-webclient-beans: true

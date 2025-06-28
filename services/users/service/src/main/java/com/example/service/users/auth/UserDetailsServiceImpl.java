@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   public ApiUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return userRepository
         .fetchOne(withRoles(byEmail(username).and(byDeletedAt(null))))
-        .map(this::toAApiUser)
+        .map(UserDetailsServiceImpl::toAApiUser)
         .orElseThrow(() -> new UsernameNotFoundException("User is not found."));
   }
 
@@ -36,11 +36,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return userRepository
         .findOne(byUuid(uuid))
         .filter(Predicate.not(UserEntity::isDeleted))
-        .map(this::toAApiUser)
+        .map(UserDetailsServiceImpl::toAApiUser)
         .orElseThrow(() -> new BadCredentialsException("User is not found."));
   }
 
-  private ApiUserDetails toAApiUser(UserEntity user) {
+  public static ApiUserDetails toAApiUser(UserEntity user) {
     return new ApiUserDetails(
         user.getUuid(),
         user.getEmail(),

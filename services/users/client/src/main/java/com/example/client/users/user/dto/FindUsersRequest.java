@@ -8,7 +8,7 @@ import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 @Builder(toBuilder = true)
-@Schema(description = "The find users request DTO")
+@Schema(description = "Find users request payload")
 public record FindUsersRequest(
     @Nullable @Schema(description = "Search string", example = "john") String search,
     @Nullable @Schema(description = "Enabled users filter", example = "true") Boolean enabled,

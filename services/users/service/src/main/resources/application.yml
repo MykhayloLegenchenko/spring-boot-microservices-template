@@ -1,8 +1,8 @@
 spring:
+  application:
+    name: users-service
+
   profiles:
     include:
       - mysql
       - kafka
-
-  application:
-    name: users-service

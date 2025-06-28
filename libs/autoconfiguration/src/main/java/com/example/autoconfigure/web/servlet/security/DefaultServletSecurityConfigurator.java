@@ -16,9 +16,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
- * Default implementation class for the {@link ServletSecurityConfigurator}.
+ * Default implementation of {@link ServletSecurityConfigurator}
  *
- * <p>Performs the default security configuration, extend this class if custom configuration is
+ * <p>Applies standard servlet security settings, extend this class if custom configuration is
  * required.
  */
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class DefaultServletSecurityConfigurator implements ServletSecurityConfig
   /**
    * Configures the given {@link HttpSecurity} object.
    *
-   * @implSpec This implementation configures {@code HttpSecurity} using overridable protected class
+   * @implSpec This implementation configures {@link HttpSecurity} using overridable protected class
    *     methods.
    */
   @Override

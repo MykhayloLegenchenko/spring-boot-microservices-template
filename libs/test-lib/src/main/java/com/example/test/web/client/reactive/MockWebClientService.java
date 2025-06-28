@@ -5,13 +5,13 @@ import com.example.test.web.client.utils.MockResponseUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.BiPredicate;
-import lombok.RequiredArgsConstructor;
+import java.util.function.UnaryOperator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
@@ -24,59 +24,115 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-/** Service for mocking {@code WebClient} responses. */
+/** Service for mocking {@link WebClient} responses. */
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class MockWebClientService implements BeanPostProcessor {
+public class MockWebClientService implements BeanPostProcessor, ExchangeFilterFunction {
   private final List<BiPredicate<ClientRequest, byte[]>> downstream = new ArrayList<>();
   private final List<MockResponseSpec> responses = new ArrayList<>();
   private final ObjectMapper objectMapper = new ObjectMapper();
+  private final Map<String, String> placeholders = new HashMap<>();
 
   private final Validator validator;
+  private final boolean mockBeans;
+  private final UnaryOperator<String> placeholdersResolver;
+
+  public MockWebClientService(
+      Environment environment,
+      Validator validator,
+      @Value("${test.mock-webclient-beans:false}") boolean mockBeans) {
+
+    this.validator = validator;
+    this.mockBeans = mockBeans;
+    placeholdersResolver = MockResponseUtils.placeholdersResolver(placeholders, environment);
+  }
 
   /**
    * Loads mock response specifications from resources.
    *
-   * @param path the absolute path within the class path to a file or directory
+   * @param path a relative path to a file or directory
    */
-  public MockWebClientService loadFromResources(String path) throws IOException, BindException {
+  public void loadFromResources(String path) throws IOException, BindException {
     responses.addAll(MockResponseUtils.responseSpecsFromResources(path, objectMapper, validator));
-    return this;
   }
 
   /**
-   * Adds downstream predicate.
+   * Adds a placeholder in the format {@code ${key}} to be used when resolving request and response
+   * values.
    *
-   * @param predicate the downstream predicate
+   * @param key the placeholder key (without the surrounding {@code ${...}})
+   * @param value the placeholder value
    */
-  public MockWebClientService downstream(BiPredicate<ClientRequest, byte[]> predicate) {
+  public void addPlaceholder(String key, String value) {
+    placeholders.put(key, value);
+  }
+
+  /**
+   * Removes a previously added placeholder by its key.
+   *
+   * @param key the placeholder key (without the surrounding {@code ${...}})
+   */
+  public void removePlaceholder(String key) {
+    placeholders.remove(key);
+  }
+
+  /**
+   * Adds a downstream predicate.
+   *
+   * @param predicate a downstream predicate
+   */
+  public void downstream(BiPredicate<ClientRequest, byte[]> predicate) {
     downstream.add(predicate);
-    return this;
+  }
+
+  /**
+   * Creates a mock object of the provided {@link WebClient.Builder}.
+   *
+   * @param builder the builder to mock
+   * @return a mock object
+   */
+  public WebClient.Builder mock(WebClient.Builder builder) {
+    return WebClientBuilderProxy.create(builder, this::clientCustomizer);
+  }
+
+  /**
+   * Creates a mock object of the provided {@link WebClient}.
+   *
+   * @param client the client to mock
+   * @return a mock object
+   */
+  public WebClient mock(WebClient client) {
+    return mock(client.mutate()).build();
   }
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) {
-    return bean instanceof WebClient.Builder builder
-        ? BuilderProxy.create(builder, this::clientCustomizer)
+    return mockBeans && bean instanceof WebClient.Builder builder
+        ? WebClientBuilderProxy.create(builder, this::clientCustomizer)
         : bean;
   }
 
-  private void clientCustomizer(WebClient.Builder builder) {
-    builder.filters(
-        t -> {
-          t.remove((ExchangeFilterFunction) this::exchangeFilter);
-          t.add(this::exchangeFilter);
-        });
-  }
-
-  private Mono<ClientResponse> exchangeFilter(ClientRequest request, ExchangeFunction next) {
+  /**
+   * Intercepts the given {@link ClientRequest} and returns a mocked {@link ClientResponse}.
+   *
+   * @see ExchangeFilterFunction#filter(ClientRequest, ExchangeFunction)
+   */
+  @Override
+  public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
     log.debug("Mock request: {} {} ", request.method(), request.url());
     if (!request.headers().isEmpty()) {
       log.debug("Headers: {}", request.headers());
     }
 
     return RequestBodyExtractor.extract(request).flatMap(body -> findResponse(request, next, body));
+  }
+
+  private void clientCustomizer(WebClient.Builder builder) {
+    builder.filters(
+        t -> {
+          t.remove(this);
+          t.add(this);
+        });
   }
 
   private Mono<ClientResponse> findResponse(
@@ -87,7 +143,10 @@ public class MockWebClientService implements BeanPostProcessor {
     }
 
     return responses.stream()
-        .filter(spec -> spec.test(request.method(), request.url(), request.headers(), body))
+        .filter(
+            spec ->
+                spec.test(
+                    request.method(), request.url(), request.headers(), body, placeholdersResolver))
         .findFirst()
         .map(MockResponseSpec::response)
         .map(this::toClientResponse)
@@ -98,12 +157,12 @@ public class MockWebClientService implements BeanPostProcessor {
   private ClientResponse toClientResponse(MockResponseSpec.Response response) {
     var builder = ClientResponse.create(response.status());
 
-    var responseHeaders = response.headers();
+    var responseHeaders = response.headers(placeholdersResolver);
     if (responseHeaders != null) {
       builder.headers(t -> t.addAll(responseHeaders));
     }
 
-    var responseBody = response.body();
+    var responseBody = response.body(placeholdersResolver);
     if (responseBody != null && responseBody.length > 0) {
       builder.body(Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(responseBody)));
     }

@@ -25,6 +25,10 @@ public interface UserRepository extends ExtendedJpaRepository<UserEntity, Long> 
       return (root, query, cb) -> cb.equal(root.get(UserEntity_.email), email);
     }
 
+    static Specification<UserEntity> bySubjectId(String subjectId) {
+      return (root, query, cb) -> cb.equal(root.get(UserEntity_.subjectId), subjectId);
+    }
+
     static Specification<UserEntity> byDeletedAt(@Nullable Instant deletedAt) {
       return (root, query, cb) ->
           cb.equal(

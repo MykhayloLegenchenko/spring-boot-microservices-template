@@ -3,18 +3,22 @@ package com.example.test.web.client.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import org.springframework.http.HttpHeaders;
 
-/** Deserializer class that can deserialize byte[] instances. */
-class BodyDeserializer extends StdDeserializer<byte[]> {
+/** Deserializer for request and response bodies. */
+class BodyDeserializer extends StdDeserializer<String> {
   public BodyDeserializer() {
-    super(HttpHeaders.class);
+    super(String.class);
   }
 
   @Override
-  public byte[] deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-    return p.readValueAsTree().toString().getBytes(StandardCharsets.UTF_8);
+  public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    var node = p.readValueAsTree();
+    if (node instanceof TextNode text) {
+      return text.asText();
+    }
+
+    return node.toString();
   }
 }

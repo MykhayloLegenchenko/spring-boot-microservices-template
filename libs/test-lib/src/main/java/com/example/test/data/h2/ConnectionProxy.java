@@ -10,7 +10,7 @@ import java.sql.Statement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-/** Proxy for {@code Connection} objects. */
+/** Proxy for {@link Connection} objects. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 class ConnectionProxy implements InvocationHandler {
   private final Connection connection;

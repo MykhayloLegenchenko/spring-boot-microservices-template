@@ -39,7 +39,7 @@ public class RoleService {
 
   @Bean
   private NewTopic roleTopic() {
-    return TopicBuilder.name(TOPIC).build();
+    return TopicBuilder.name(TOPIC).partitions(1).build();
   }
 
   @Transactional

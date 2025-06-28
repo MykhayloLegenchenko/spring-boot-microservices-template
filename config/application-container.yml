@@ -1,7 +1,7 @@
 auth:
   jwt:
     access-token:
-      secret: accessSecret
+      secret: your-access-secret
 
 services:
   #  discovery: ${DISCOVERY_SERVICE_URL:http://discovery-service:8761}

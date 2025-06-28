@@ -51,13 +51,13 @@ public interface BlockingClientFactory {
   BlockingClientFactory factoryCustomizers(
       Consumer<List<Consumer<HttpServiceProxyFactory.Builder>>> configurer);
 
-  /** Clone this {@code BlockingClientFactory}. */
+  /** Clone this {@link BlockingClientFactory}. */
   BlockingClientFactory duplicate();
 
   /** Creates a new blocking HTTP client. */
   <T> T createClient(Class<T> serviceType);
 
-  /** Creates a new {@code BlockingClientFactory}. */
+  /** Creates a new {@link BlockingClientFactory}. */
   static BlockingClientFactory create(RestClient.Builder builder) {
     return new BlockingClientFactoryImpl(builder);
   }

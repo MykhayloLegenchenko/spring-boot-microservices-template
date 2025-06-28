@@ -1,6 +1,5 @@
 package com.example.service.users.user;
 
-import static com.example.client.users.user.dto.UserEvent.TOPIC;
 import static com.example.client.users.user.dto.UserEvent.Type.*;
 import static com.example.service.users.user.UserRepository.Spec.byUuid;
 import static com.example.service.users.user.UserRepository.Spec.withRoles;
@@ -15,45 +14,32 @@ import com.example.common.security.jwt.JwtTokenService;
 import com.example.common.uuid.UuidType;
 import com.example.common.uuid.UuidUtils;
 import com.example.common.web.client.blocking.BlockingClientFactory;
-import com.example.service.users.UsersServiceApplication;
+import com.example.service.users.configuration.AbstractIntegrationTest;
 import com.example.service.users.role.RoleRepository;
 import com.example.service.users.role.model.RoleEntity;
 import com.example.service.users.user.model.UserEntity;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.jspecify.annotations.NullUnmarked;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClient;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = UsersServiceApplication.class)
-@Import(JwtTokenService.class)
-@EmbeddedKafka(topics = TOPIC)
 @NullUnmarked
-class UserApiTest {
+class UserApiTest extends AbstractIntegrationTest {
   private static final String PASSWORD = "password1";
   private static final UpdateUserRequest conflictUpdateUserRequest =
       new UpdateUserRequest("john@example.com", "Fist", "Last");
 
   private static JwtTokenService tokenService;
-  private static BlockingQueue<ConsumerRecord<String, UserEvent>> userEvents;
   private static BlockingClientFactory factory;
   private static UserBlockingClient noAuthClient;
   private static AuthBlockingClient authClient;
@@ -71,9 +57,7 @@ class UserApiTest {
   private UserBlockingClient selfAdminClient;
 
   @BeforeAll
-  static void init(@LocalServerPort int port, @Autowired JwtTokenService jwtTokenService) {
-    userEvents = new LinkedBlockingQueue<>();
-
+  static void setUpAll(@LocalServerPort int port, @Autowired JwtTokenService jwtTokenService) {
     tokenService = jwtTokenService;
 
     factory =
@@ -86,13 +70,8 @@ class UserApiTest {
     superClient = createClient(UuidUtils.randomUUID(UuidType.USER), "admin", "super");
   }
 
-  @KafkaListener(topics = TOPIC)
-  public void userEventListener(ConsumerRecord<String, UserEvent> data) {
-    userEvents.add(data);
-  }
-
   @Test
-  void apiCalls() throws InterruptedException {
+  void testApiCalls() {
     testRegisterUser();
     testUpdateUser();
     testUpdateUserByUUID();
@@ -105,10 +84,11 @@ class UserApiTest {
     testDeleteUser();
   }
 
-  private void testRegisterUser() throws InterruptedException {
+  private void testRegisterUser() {
     var request = new RegisterUserRequest("test1@example.com", " Fist1 ", " Last1 ", PASSWORD);
     var response = noAuthClient.registerUser(request);
 
+    Assertions.assertNotNull(request.lastName());
     assertThat(mapper.toRegisterUserRequest(response, request.password()))
         .isEqualTo(
             new RegisterUserRequest(
@@ -134,7 +114,7 @@ class UserApiTest {
     lastUser = user;
   }
 
-  private void testUpdateUser() throws InterruptedException {
+  private void testUpdateUser() {
     var request = new UpdateUserRequest("test2@example.com", " Fist2 ", " Last2 ");
     assertSecured(api -> api.updateUser(request));
 
@@ -144,7 +124,7 @@ class UserApiTest {
     assertConflict(() -> selfClient.updateUser(conflictUpdateUserRequest));
   }
 
-  private void testUpdateUserByUUID() throws InterruptedException {
+  private void testUpdateUserByUUID() {
     var request = new UpdateUserRequest("test3@example.com", " Fist3 ", " Last3 ");
 
     assertAdminSecured(api -> api.updateUser(lastUser.getUuid(), request));
@@ -181,7 +161,7 @@ class UserApiTest {
     assertThat(countResult.count()).isEqualTo(findResult.size());
   }
 
-  private void testDisableUser() throws InterruptedException {
+  private void testDisableUser() {
     assertAdminSecured(api -> api.disableUser(lastUser.getUuid()));
     assertBadRequest(() -> selfAdminClient.disableUser(lastUser.getUuid()));
 
@@ -190,7 +170,7 @@ class UserApiTest {
     assertLoginUnauthorised(lastUser.getEmail());
   }
 
-  private void testEnableUser() throws InterruptedException {
+  private void testEnableUser() {
     assertAdminSecured(api -> api.enableUser(lastUser.getUuid()));
     assertBadRequest(() -> selfAdminClient.enableUser(lastUser.getUuid()));
 
@@ -199,7 +179,7 @@ class UserApiTest {
     assertLoginSuccess(lastUser.getEmail(), PASSWORD, lastUser.getUuid());
   }
 
-  private void testUserRoles() throws InterruptedException {
+  private void testUserRoles() {
     var request = Set.of("TEST_ROLE_1", "TEST_ROLE_2");
     assertAdminSecured(api -> api.setRoles(lastUser.getUuid(), request));
     assertSecured(UserBlockingClient::getRoles);
@@ -235,7 +215,7 @@ class UserApiTest {
     }
   }
 
-  private void testDeleteUser() throws InterruptedException {
+  private void testDeleteUser() {
     assertAdminSecured(api -> api.enableUser(lastUser.getUuid()));
     assertBadRequest(() -> selfAdminClient.deleteUser(lastUser.getUuid()));
 
@@ -274,9 +254,8 @@ class UserApiTest {
     assertUnauthorized(() -> authClient.login(new LoginRequest(email, PASSWORD)));
   }
 
-  void assertUserEventProduced(UUID uuid, UserEvent.Type type, UserDtoEx user)
-      throws InterruptedException {
-    var event = userEvents.poll(10, TimeUnit.SECONDS);
+  void assertUserEventProduced(UUID uuid, UserEvent.Type type, UserDtoEx user) {
+    var event = testKafkaListener.getUserEvent();
     assertThat(event).isNotNull();
     assertThat(event.key()).isEqualTo(uuid.toString());
     assertThat(event.value()).isEqualTo(new UserEvent(type, user));
@@ -295,8 +274,8 @@ class UserApiTest {
     assertForbidden(() -> caller.accept(client));
   }
 
-  private void assertUpdated(UpdateUserRequest request, UserData response)
-      throws InterruptedException {
+  private void assertUpdated(UpdateUserRequest request, UserData response) {
+    Assertions.assertNotNull(request.lastName());
     assertThat(mapper.toUpdateUserRequest(response))
         .isEqualTo(
             new UpdateUserRequest(
@@ -318,7 +297,7 @@ class UserApiTest {
     lastUser = user;
   }
 
-  private void assertEnabledUpdated(boolean enabled) throws InterruptedException {
+  private void assertEnabledUpdated(boolean enabled) {
     var user = loadUser(lastUser.getUuid());
 
     assertThat(user.getUpdatedAt()).isAfter(lastUser.getUpdatedAt());
@@ -329,12 +308,12 @@ class UserApiTest {
     lastUser = user;
   }
 
-  private void assertRolesUpdated(Set<String> roles) throws InterruptedException {
+  private void assertRolesUpdated(Set<String> roles) {
     lastUser = loadUser(lastUser.getUuid());
     assertThat(lastUser.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()))
         .isEqualTo(roles);
 
-    var event = userEvents.poll(10, TimeUnit.SECONDS);
+    var event = testKafkaListener.getUserEvent();
     assertThat(event).isNotNull();
     assertThat(event.key()).isEqualTo(lastUser.getUuid().toString());
     assertThat(event.value())

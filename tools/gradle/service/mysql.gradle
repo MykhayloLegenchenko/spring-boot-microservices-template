@@ -28,9 +28,10 @@ dependencies {
 }
 
 liquibase {
+    jvmArgs = "-Duser.dir=${projectDir}/src/main/resources"
+
     activities {
         mainClassName {
-            classpath "${projectDir}/src/main/resources"
             changelogFile 'db/db.changelog-root.xml'
 
             url System.getenv('MYSQL_URL') ?: dbUrl

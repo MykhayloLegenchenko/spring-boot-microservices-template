@@ -14,7 +14,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
 public class NettyClientUtils {
 
   /**
-   * Returns the {@code WebClient.Builder} customizer that configures Netty {@code HttpClient}
+   * Returns the {@link WebClient.Builder} customizer that configures Netty {@link HttpClient}
    * logger.
    */
   public static Consumer<WebClient.Builder> wiretap(LogLevel level, AdvancedByteBufFormat format) {

@@ -37,7 +37,7 @@ public class DataUtils {
    *     property[:direction]} where {@code direction} is either {@code asc} or {@code desc}, can be
    *     {@code null}.
    * @param allowedFields set of allowed field names
-   * @return parsed {@code Sort} object
+   * @return parsed {@link Sort} object
    * @throws BadRequestException if any sort string is invalid
    */
   public static Sort parseSort(@Nullable List<String> sortList, Set<String> allowedFields)

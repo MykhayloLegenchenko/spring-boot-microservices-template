@@ -5,54 +5,54 @@ import static org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpClientErrorException.*;
 
 /** Custom assertion methods. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Assertions {
 
   /**
-   * Assert that an exception of type BadRequest is thrown by the {@code callable}
+   * Asserts that the given {@code callable} throws a {@link BadRequest} exception.
    *
-   * @param callable code throwing the BadRequest exception
+   * @param callable the code expected to throw a {@code BadRequest} exception
    */
   public static void assertBadRequest(ThrowingCallable callable) {
-    assertThatExceptionOfType(HttpClientErrorException.BadRequest.class).isThrownBy(callable);
+    assertThatExceptionOfType(BadRequest.class).isThrownBy(callable);
   }
 
   /**
-   * Assert that an exception of type Conflict is thrown by the {@code callable}
+   * Asserts that the given {@code callable} throws a {@link Conflict} exception.
    *
-   * @param callable code throwing the Conflict exception
+   * @param callable the code expected to throw a {@code Conflict} exception
    */
   public static void assertConflict(ThrowingCallable callable) {
-    assertThatExceptionOfType(HttpClientErrorException.Conflict.class).isThrownBy(callable);
+    assertThatExceptionOfType(Conflict.class).isThrownBy(callable);
   }
 
   /**
-   * Assert that an exception of type Forbidden is thrown by the {@code callable}
+   * Asserts that the given {@code callable} throws a {@link Forbidden} exception.
    *
-   * @param callable code throwing the Forbidden exception
+   * @param callable the code expected to throw a {@code Forbidden} exception
    */
   public static void assertForbidden(ThrowingCallable callable) {
-    assertThatExceptionOfType(HttpClientErrorException.Forbidden.class).isThrownBy(callable);
+    assertThatExceptionOfType(Forbidden.class).isThrownBy(callable);
   }
 
   /**
-   * Assert that an exception of type NotFound is thrown by the {@code callable}
+   * Asserts that the given {@code callable} throws a {@link NotFound} exception.
    *
-   * @param callable code throwing the NotFound exception
+   * @param callable the code expected to throw a {@code NotFound} exception
    */
   public static void assertNotFound(ThrowingCallable callable) {
-    assertThatExceptionOfType(HttpClientErrorException.NotFound.class).isThrownBy(callable);
+    assertThatExceptionOfType(NotFound.class).isThrownBy(callable);
   }
 
   /**
-   * Assert that an exception of type Unauthorized is thrown by the {@code callable}
+   * Asserts that the given {@code callable} throws a {@link Unauthorized} exception.
    *
-   * @param callable code throwing the Unauthorized exception
+   * @param callable the code expected to throw a {@code Unauthorized} exception
    */
   public static void assertUnauthorized(ThrowingCallable callable) {
-    assertThatExceptionOfType(HttpClientErrorException.Unauthorized.class).isThrownBy(callable);
+    assertThatExceptionOfType(Unauthorized.class).isThrownBy(callable);
   }
 }

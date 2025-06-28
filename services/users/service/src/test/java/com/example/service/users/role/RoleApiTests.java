@@ -13,36 +13,24 @@ import com.example.common.security.jwt.JwtTokenService;
 import com.example.common.uuid.UuidType;
 import com.example.common.uuid.UuidUtils;
 import com.example.common.web.client.blocking.BlockingClientFactory;
-import com.example.service.users.UsersServiceApplication;
+import com.example.service.users.configuration.AbstractIntegrationTest;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestClient;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = UsersServiceApplication.class)
-@Import(JwtTokenService.class)
-@EmbeddedKafka(topics = TOPIC)
+@EmbeddedKafka
 @NullUnmarked
-class RoleApiTests {
+class RoleApiTests extends AbstractIntegrationTest {
   private static final List<RoleDto> systemRoles =
       Stream.of("USER", "REFRESH", "ADMIN", "SUPER").map(RoleDto::new).toList();
 
-  private static BlockingQueue<ConsumerRecord<String, RoleEvent>> roleEvents;
   private static RoleBlockingClient client;
   private static RoleBlockingClient adminClient;
   private static RoleBlockingClient noAuthClient;
@@ -50,9 +38,7 @@ class RoleApiTests {
   private RoleDto role;
 
   @BeforeAll
-  static void init(@LocalServerPort int port, @Autowired JwtTokenService tokenService) {
-    roleEvents = new LinkedBlockingQueue<>();
-
+  static void setUpAll(@LocalServerPort int port, @Autowired JwtTokenService tokenService) {
     var factory =
         BlockingClientFactory.create(RestClient.builder().baseUrl("http://localhost:" + port));
 
@@ -71,20 +57,15 @@ class RoleApiTests {
             .createClient(RoleBlockingClient.class);
   }
 
-  @KafkaListener(topics = TOPIC)
-  public void roleEventListener(ConsumerRecord<String, RoleEvent> data) {
-    roleEvents.add(data);
-  }
-
   @Test
-  void apiCalls() throws InterruptedException {
+  void testApiCalls() {
     testCreateRole();
     testUpdateRole();
     testGetAllRoles();
     testDeleteRole();
   }
 
-  private void testCreateRole() throws InterruptedException {
+  private void testCreateRole() {
     var request = new RoleDto("ROLE_1");
 
     assertSecured(api -> api.createRole(request));
@@ -98,7 +79,7 @@ class RoleApiTests {
     role = response;
   }
 
-  private void testUpdateRole() throws InterruptedException {
+  private void testUpdateRole() {
     var request = new RoleDto("UPDATED_ROLE_1");
 
     asserSystemRolesSecured(r -> adminClient.updateRole(r.name(), request));
@@ -121,7 +102,7 @@ class RoleApiTests {
     assertThat(response).contains(role.name());
   }
 
-  private void testDeleteRole() throws InterruptedException {
+  private void testDeleteRole() {
     asserSystemRolesSecured(r -> adminClient.deleteRole(r.name()));
     assertSecured(api -> api.deleteRole(role.name()));
 
@@ -140,10 +121,8 @@ class RoleApiTests {
     systemRoles.forEach(r -> assertBadRequest(() -> caller.accept(r)));
   }
 
-  private static void assertRoleEvent(String name, RoleEvent.Type type, RoleDto role)
-      throws InterruptedException {
-    var event = roleEvents.poll(10, TimeUnit.SECONDS);
-    assertThat(event).isNotNull();
+  private void assertRoleEvent(String name, RoleEvent.Type type, RoleDto role) {
+    var event = testKafkaListener.getRoleEvent();
     assertThat(event.topic()).isEqualTo(TOPIC);
     assertThat(event.key()).isEqualTo(name);
     assertThat(event.value()).isEqualTo(new RoleEvent(type, role));

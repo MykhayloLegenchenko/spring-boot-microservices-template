@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.jspecify.annotations.Nullable;
 
-@Schema(description = "The user update DTO")
+@Schema(description = "Update user payload")
 public record UpdateUserRequest(
     @Email
         @NotBlank
@@ -14,5 +15,5 @@ public record UpdateUserRequest(
         String email,
     @NotBlank @Size(max = 50) @Schema(description = "Fist name of the user", example = "John")
         String firstName,
-    @NotBlank @Size(max = 50) @Schema(description = "Last name of the user", example = "Doe")
+    @Nullable @Size(max = 50) @Schema(description = "Last name of the user", example = "Doe")
         String lastName) {}

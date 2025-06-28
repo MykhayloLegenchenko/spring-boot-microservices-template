@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.reactive.function.client.WebClient;
 
-/** Proxy for {@code WebClient} objects. */
+/** Proxy for {@link WebClient} objects. */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class ClientProxy implements InvocationHandler {
+class WebClientProxy implements InvocationHandler {
   private final WebClient client;
   private final Consumer<WebClient.Builder> customizer;
 
@@ -21,14 +21,14 @@ class ClientProxy implements InvocationHandler {
     var type = client.getClass();
     return (WebClient)
         Proxy.newProxyInstance(
-            type.getClassLoader(), type.getInterfaces(), new ClientProxy(client, customizer));
+            type.getClassLoader(), type.getInterfaces(), new WebClientProxy(client, customizer));
   }
 
   @Override
   public Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
     var result = invokeMethod(method, args);
     if (result instanceof WebClient.Builder builder) {
-      return BuilderProxy.create(builder, customizer);
+      return WebClientBuilderProxy.create(builder, customizer);
     }
 
     return result;

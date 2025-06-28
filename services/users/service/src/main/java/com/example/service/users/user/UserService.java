@@ -20,14 +20,13 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
@@ -76,18 +75,44 @@ public class UserService {
   }
 
   @Transactional
-  public UserDto registerUser(RegisterUserRequest request) {
-    var user = UserEntity.createForInsert();
+  public UserEntity registerUserEntity(
+      @Nullable String clientRegistrationId,
+      @Nullable String subjectId,
+      RegisterUserRequest request) {
 
+    var user = UserEntity.createForInsert();
     userMapper.update(user, request);
+    user.setClientRegistrationId(clientRegistrationId);
+    user.setSubjectId(subjectId);
     user.setPassword(passwordEncoder.encode(request.password()));
-    save(user);
+
+    try {
+      save(user);
+    } catch (DataIntegrityViolationException ex) {
+      var constraints =
+          Map.<String, @Nullable Supplier<String>>of(
+              "user.user_email_uk",
+              () ->
+                  MessageFormat.format("User with email \"{0}\" already exists.", user.getEmail()),
+              "user.user_subject_uk",
+              () ->
+                  MessageFormat.format(
+                      "User with subject id \"{0}\" already exists.", user.getSubjectId()));
+
+      JpaUtils.processConstraintsViolation(ex, constraints);
+    }
 
     userKafkaTemplate.send(
         TOPIC,
         user.getUuid().toString(),
         new UserEvent(UserEvent.Type.REGISTER, userMapper.toUserDtoEx(user)));
 
+    return user;
+  }
+
+  @Transactional
+  public UserDto registerUser(RegisterUserRequest request) {
+    var user = registerUserEntity(null, null, request);
     return userMapper.toUserDto(user);
   }
 

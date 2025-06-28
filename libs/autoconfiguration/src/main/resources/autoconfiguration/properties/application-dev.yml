@@ -6,7 +6,7 @@ spring:
 auth:
   jwt:
     access-token:
-      secret: accessSecret
+      secret: your-access-secret
 
 services:
   discovery: http://localhost:8761

@@ -41,6 +41,9 @@ public class UserEntity {
 
   private String email;
 
+  private String clientRegistrationId;
+  private String subjectId;
+
   @Column(columnDefinition = "tinyint(1)")
   private boolean enabled;
 

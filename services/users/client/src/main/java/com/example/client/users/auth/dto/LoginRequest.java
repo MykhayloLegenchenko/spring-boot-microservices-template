@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-@Schema(description = "The login request DTO")
+@Schema(description = "Login request payload")
 public record LoginRequest(
     @Email @NotBlank @Schema(description = "Email address", example = "john@example.com")
         String email,

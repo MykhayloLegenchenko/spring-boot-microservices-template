@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.jspecify.annotations.Nullable;
 
-@Schema(description = "The user registration DTO")
+@Schema(description = "User registration payload")
 public record RegisterUserRequest(
     @Email
         @NotBlank
@@ -14,7 +15,7 @@ public record RegisterUserRequest(
         String email,
     @NotBlank @Size(max = 50) @Schema(description = "Fist name of the user", example = "John")
         String firstName,
-    @NotBlank @Size(max = 50) @Schema(description = "Last name of the user", example = "Doe")
+    @Nullable @Size(max = 50) @Schema(description = "Last name of the user", example = "Doe")
         String lastName,
     @NotBlank @Size(min = 6) @Schema(description = "User password", example = "123456")
         String password) {}

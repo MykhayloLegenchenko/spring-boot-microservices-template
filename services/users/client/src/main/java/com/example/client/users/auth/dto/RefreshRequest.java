@@ -3,7 +3,7 @@ package com.example.client.users.auth.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
-@Schema(description = "The refresh request DTO")
+@Schema(description = "Refresh request payload")
 public record RefreshRequest(
     @NotBlank
         @Schema(

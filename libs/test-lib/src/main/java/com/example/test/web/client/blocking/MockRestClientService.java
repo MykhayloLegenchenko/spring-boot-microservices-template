@@ -5,14 +5,13 @@ import com.example.test.web.client.utils.MockResponseUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
-import lombok.RequiredArgsConstructor;
+import java.util.function.UnaryOperator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -23,56 +22,102 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.web.client.RestClient;
 
-/** Service for mocking {@code RestClient} responses. */
+/** Service for mocking {@link RestClient} responses. */
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class MockRestClientService implements BeanPostProcessor {
+public class MockRestClientService implements BeanPostProcessor, ClientHttpRequestInterceptor {
   private final List<BiPredicate<HttpRequest, byte[]>> downstream = new ArrayList<>();
   private final List<MockResponseSpec> responses = new ArrayList<>();
   private final ObjectMapper objectMapper = new ObjectMapper();
+  private final Map<String, String> placeholders = new HashMap<>();
 
   private final Validator validator;
+  private final boolean mockBeans;
+  private final UnaryOperator<String> placeholdersResolver;
+
+  public MockRestClientService(
+      Environment environment,
+      Validator validator,
+      @Value("${test.mock-restclient-beans:false}") boolean mockBeans) {
+
+    this.validator = validator;
+    this.mockBeans = mockBeans;
+    placeholdersResolver = MockResponseUtils.placeholdersResolver(placeholders, environment);
+  }
 
   /**
    * Loads mock response specifications from resources.
    *
-   * @param path the absolute path within the class path to a file or directory
+   * @param path a relative path to a file or directory
    */
-  public MockRestClientService fromResources(String path) throws BindException, IOException {
+  public void loadFromResources(String path) throws BindException, IOException {
     responses.addAll(MockResponseUtils.responseSpecsFromResources(path, objectMapper, validator));
-
-    return this;
   }
 
   /**
-   * Adds downstream predicate.
+   * Adds a placeholder in the format {@code ${key}} to be used when resolving request and response
+   * values.
    *
-   * @param predicate the downstream predicate
+   * @param key the placeholder key (without the surrounding {@code ${...}})
+   * @param value the placeholder value
    */
-  public MockRestClientService downstream(BiPredicate<HttpRequest, byte[]> predicate) {
+  public void addPlaceholder(String key, String value) {
+    placeholders.put(key, value);
+  }
+
+  /**
+   * Removes a previously added placeholder by its key.
+   *
+   * @param key the placeholder key (without the surrounding {@code ${...}})
+   */
+  public void removePlaceholder(String key) {
+    placeholders.remove(key);
+  }
+
+  /**
+   * Adds a downstream predicate.
+   *
+   * @param predicate a downstream predicate
+   */
+  public void downstream(BiPredicate<HttpRequest, byte[]> predicate) {
     downstream.add(predicate);
-    return this;
+  }
+
+  /**
+   * Creates a mock object of the provided {@link RestClient.Builder}.
+   *
+   * @param builder the builder to mock
+   * @return a mock object
+   */
+  public RestClient.Builder mock(RestClient.Builder builder) {
+    return RestClientBuilderProxy.create(builder, this::clientCustomizer);
+  }
+
+  /**
+   * Creates a mock object of the provided {@link RestClient}.
+   *
+   * @param client the client to mock
+   * @return a mock object
+   */
+  public RestClient mock(RestClient client) {
+    return mock(client.mutate()).build();
   }
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) {
-    return bean instanceof RestClient.Builder builder
-        ? BuilderProxy.create(builder, this::clientCustomizer)
+    return mockBeans && bean instanceof RestClient.Builder builder
+        ? RestClientBuilderProxy.create(builder, this::clientCustomizer)
         : bean;
   }
 
-  private void clientCustomizer(RestClient.Builder builder) {
-    builder.requestInterceptors(
-        t -> {
-          t.remove((ClientHttpRequestInterceptor) this::requestInterceptor);
-          t.add(this::requestInterceptor);
-        });
-  }
-
-  private ClientHttpResponse requestInterceptor(
+  /**
+   * Intercepts the given {@link HttpRequest} and returns a mocked {@link ClientHttpResponse}.
+   *
+   * @see ClientHttpRequestInterceptor#intercept(HttpRequest, byte[], ClientHttpRequestExecution)
+   */
+  @Override
+  public ClientHttpResponse intercept(
       HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-
     log.debug("Mock request: {} {} ", request.getMethod(), request.getURI());
     if (!request.getHeaders().isEmpty()) {
       log.debug("Headers: {}", request.getHeaders());
@@ -86,21 +131,35 @@ public class MockRestClientService implements BeanPostProcessor {
     return response.isPresent() ? response.get() : defaultResponse(request, body, execution);
   }
 
+  private void clientCustomizer(RestClient.Builder builder) {
+    builder.requestInterceptors(
+        t -> {
+          t.remove(this);
+          t.add(this);
+        });
+  }
+
   private Optional<ClientHttpResponse> findResponse(HttpRequest request, byte[] body) {
     return responses.stream()
         .filter(
-            spec -> spec.test(request.getMethod(), request.getURI(), request.getHeaders(), body))
+            spec ->
+                spec.test(
+                    request.getMethod(),
+                    request.getURI(),
+                    request.getHeaders(),
+                    body,
+                    placeholdersResolver))
         .map(MockResponseSpec::response)
         .map(this::toClientResponse)
         .findFirst();
   }
 
   private ClientHttpResponse toClientResponse(MockResponseSpec.Response response) {
-    var body = response.body();
+    var body = response.body(placeholdersResolver);
     var clientResponse =
         new MockClientHttpResponse(body != null ? body : new byte[0], response.status());
 
-    var headers = response.headers();
+    var headers = response.headers(placeholdersResolver);
     if (headers != null) {
       clientResponse.getHeaders().addAll(headers);
     }
@@ -115,7 +174,9 @@ public class MockRestClientService implements BeanPostProcessor {
       return execution.execute(request, body);
     }
 
-    throw new NoSuchElementException(
-        "Can not find response for " + request.getMethod() + " " + request.getURI());
+    var message = "Can not find response for " + request.getMethod() + " " + request.getURI();
+    log.debug(message);
+
+    throw new NoSuchElementException(message);
   }
 }

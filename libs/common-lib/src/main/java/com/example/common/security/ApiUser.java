@@ -3,7 +3,7 @@ package com.example.common.security;
 import java.security.Principal;
 import java.util.UUID;
 
-/** The {@code Principal} interface extension that contains the user's UUID. */
+/** The {@link Principal} interface extension that contains the user's UUID. */
 public interface ApiUser extends Principal {
   UUID uuid();
 

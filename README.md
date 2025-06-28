@@ -6,3 +6,12 @@ Prerequisites: Java 24 and Docker.
 ```bash
 ./docker/run.sh
 ```
+### Generate IntelliJ IDEA project settings
+```bash
+./gradlew generateIdeaSettings
+```
+
+### Check for outdated dependencies
+```bash
+./gradlew checkOutdatedDependencies
+```

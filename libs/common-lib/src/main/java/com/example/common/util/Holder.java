@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
  */
 public interface Holder<T extends @Nullable Object> extends Supplier<T>, Consumer<T> {
   /**
-   * Creates a new {@code Holder} with a {@code null} value.
+   * Creates a new {@link Holder} with a {@code null} value.
    *
    * @param <T> value type
    */
@@ -23,7 +23,7 @@ public interface Holder<T extends @Nullable Object> extends Supplier<T>, Consume
   }
 
   /**
-   * Creates a new {@code Holder} with the given value.
+   * Creates a new {@link Holder} with the given value.
    *
    * @param <T> value type
    */

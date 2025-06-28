@@ -3,6 +3,7 @@ package com.example.client.users.user.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 
 @Schema(description = "The user DTO")
 public record UserDto(
@@ -10,7 +11,7 @@ public record UserDto(
         UUID uuid,
     @Schema(description = "Email address of the user", example = "john@example.com") String email,
     @Schema(description = "Fist name of the user", example = "John") String firstName,
-    @Schema(description = "Last name of the user", example = "Doe") String lastName,
+    @Nullable @Schema(description = "Last name of the user", example = "Doe") String lastName,
     @Schema(description = "User creation timestamp", example = "2023-11-11T06:19:11.018Z")
         Instant createdAt,
     @Schema(description = "User update timestamp", example = "2023-11-11T06:19:11.018Z")
