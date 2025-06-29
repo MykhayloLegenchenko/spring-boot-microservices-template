@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 class Dependency {
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+")
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(?<version>\\d+\\.\\d+\\.\\d+)<")
 
     private String groupId
     private String artifactId
@@ -71,7 +71,7 @@ class Dependency {
                     String.format("Can't parse latest dependency version.\nURL: %s\n%s", uri, content))
         }
 
-        return matcher.group(matcher.groupCount())
+        return matcher.group("version")
     }
 }
 
@@ -96,7 +96,7 @@ var DEPENDENCIES = [
         "org.springframework.boot:spring-boot:${springBootVersion}",
         "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}",
         "io.spring.dependency-management:${springDependencyManagementVersion}",
-        "org.springdoc:springdoc-openapi-starter-common:${springDocOpenApiStarterVersion}"
+        "org.springdoc:springdoc-openapi-starter-common:${springDocOpenApiStarterVersion}",
 ]
 
 tasks.register('checkOutdatedDependencies') {
