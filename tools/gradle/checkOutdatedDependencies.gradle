@@ -2,8 +2,7 @@ import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 class Dependency {
-    @SuppressWarnings('Annotator')
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(?<version>\\d+\\.\\d+\\.\\d+)<")
+    private static final Pattern VERSION_PATTERN = Pattern.compile(".*<version>([^<-]+)</version>", Pattern.DOTALL)
 
     private String groupId
     private String artifactId
@@ -47,13 +46,11 @@ class Dependency {
 
     String latestVersion() throws IOException {
         var uri =
-                groupId == null
-                        ? String.format(
-                        "https://plugins.gradle.org/m2/%s/%s.gradle.plugin/maven-metadata.xml",
-                        artifactId.replace('.', '/'), artifactId)
-                        : String.format(
-                        "https://repo1.maven.org/maven2/%s/%s/maven-metadata.xml",
-                        groupId.replace('.', '/'), artifactId)
+                groupId == null ?
+                        String.format("https://plugins.gradle.org/m2/%s/%s.gradle.plugin/maven-metadata.xml",
+                                artifactId.replace('.', '/'), artifactId) :
+                        String.format("https://repo1.maven.org/maven2/%s/%s/maven-metadata.xml",
+                                groupId.replace('.', '/'), artifactId)
 
         var content = new StringBuilder()
         try (var scanner = new Scanner(URI.create(uri).toURL().openStream(), StandardCharsets.UTF_8)) {
@@ -68,11 +65,10 @@ class Dependency {
 
         var matcher = VERSION_PATTERN.matcher(content)
         if (!matcher.find()) {
-            throw new IllegalArgumentException(
-                    String.format("Can't parse latest dependency version.\nURL: %s\n%s", uri, content))
+            throw new IllegalArgumentException(String.format("Can't parse latest dependency version.\nURL: %s\n%s", uri, content))
         }
 
-        return matcher.group("version")
+        return matcher.group(1)
     }
 }
 
