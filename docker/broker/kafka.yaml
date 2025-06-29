@@ -21,8 +21,12 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     volumes:
       - kafka-data:/var/lib/kafka/data
+      - kafka-config:/mnt/shared/config
+      - kafka-secrets:/etc/kafka/secrets
     networks:
       - template-network
 
 volumes:
   kafka-data:
+  kafka-config:
+  kafka-secrets:

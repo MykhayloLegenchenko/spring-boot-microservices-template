@@ -1,16 +1,16 @@
 services:
-  config:
+  discovery:
     container_name: cloud
     hostname: config-service
     build:
       context: ../../..
-      dockerfile: docker/cloud/compound/Dockerfile
+      dockerfile: docker/cloud/composite/Dockerfile
     environment:
       PROFILE: "container, noconfig"
       OTEL_PROFILE: 'disabled'
     ports:
-      - '8761:8761' # discovery-service
       - '8888:8888' # config-service
+      - '8761:8761' # discovery-service
       - '8080:8080' # gateway-service
     volumes:
       - ../../../config:/root/config

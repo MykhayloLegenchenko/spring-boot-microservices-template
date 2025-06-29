@@ -3,12 +3,9 @@ include:
   - mysql/compose.yaml
   - broker/kafka.yaml
   - observability/lgtm.yaml
-  - cloud/compound/compose.yaml # use compound cloud services
+  - cloud/composite/compose.yaml # use composite cloud services
 #  - cloud/compose.yaml
   - services/compose.yaml
 
 networks:
   template-network:
-
-volumes:
-  mysqldb:

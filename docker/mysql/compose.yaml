@@ -9,7 +9,10 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - mysqldb:/var/lib/mysql
+      - mysql:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - template-network
+
+volumes:
+  mysql:

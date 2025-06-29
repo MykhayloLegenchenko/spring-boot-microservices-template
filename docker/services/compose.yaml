@@ -17,10 +17,10 @@ services:
         condition: service_started
       mysqldb:
         condition: service_started
+      discovery:
+        condition: service_healthy
       observability:
         condition: service_started
-      config:
-        condition: service_healthy
 
   # Weather service
   weather-service:
@@ -36,7 +36,7 @@ services:
     networks:
       - template-network
     depends_on:
+      discovery:
+        condition: service_healthy
       observability:
         condition: service_started
-      config:
-        condition: service_healthy

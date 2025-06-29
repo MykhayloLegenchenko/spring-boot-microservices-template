@@ -18,7 +18,7 @@ COPY docker/services/*.sh /app/
 ENV PORT=8080
 EXPOSE $PORT
 
-HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD ["./app/check.sh", "$PORT"]
+HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD ./app/check.sh $PORT
 
 ENV PROFILE="container"
 ENV OTEL_PROFILE=$PROFILE

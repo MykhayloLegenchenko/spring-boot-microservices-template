@@ -15,7 +15,7 @@ COPY tools/opentelemetry /app/opentelemetry/
 COPY libs/opentelemetry-extension/build/libs/*.jar /app/opentelemetry/opentelemetry-extension.jar
 
 COPY docker/services/*.sh /app/
-COPY docker/cloud/compound/*.sh /app/
+COPY docker/cloud/composite/*.sh /app/
 
 EXPOSE 8761
 EXPOSE 8888
