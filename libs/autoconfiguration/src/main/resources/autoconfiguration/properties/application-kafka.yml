@@ -12,4 +12,5 @@ spring:
 
 logging:
   level:
-    org.apache.kafka.clients: ERROR
+    org.apache.kafka.clients: WARN
+    org.springframework.kafka.listener: WARN

@@ -36,23 +36,6 @@ if (hooksDir.isDirectory()) {
     }
 }
 
-// Download OpenTelemetry JavaAgent on build
-def otelDest = file('./tools/opentelemetry/opentelemetry-javaagent.jar')
-
-apply plugin: 'base'
-assemble {
-    if (!otelDest.exists()) {
-        def uri = new URI("https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${opentelemetryJavaagentVersion}/opentelemetry-javaagent.jar")
-        try (def is = uri.toURL().openStream()) {
-            Files.copy(is, otelDest.toPath())
-        }
-    }
-}
-
-// Delete OpenTelemetry JavaAgent on cleanup
-clean {
-    delete otelDest
-}
 
 // Check dependency versions task
 apply from: 'tools/gradle/checkOutdatedDependencies.gradle'

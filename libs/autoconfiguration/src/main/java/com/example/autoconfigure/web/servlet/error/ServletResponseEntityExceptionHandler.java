@@ -45,9 +45,7 @@ public class ServletResponseEntityExceptionHandler extends ResponseEntityExcepti
       HttpStatusCode statusCode,
       WebRequest request) {
 
-    if (log.isDebugEnabled()) {
-      log.debug("Response error", ex);
-    }
+    log.error("Unhandled exception", ex);
 
     return ErrorUtils.updateResponseEntity(
         super.handleExceptionInternal(ex, body, headers, statusCode, request),

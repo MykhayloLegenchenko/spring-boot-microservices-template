@@ -1,7 +1,7 @@
 services:
-  mysqldb:
-    container_name: mysqldb
-    image: mysql:9.3.0
+  mysql:
+    container_name: mysql
+    image: mysql:9.3
     environment:
       MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'password'

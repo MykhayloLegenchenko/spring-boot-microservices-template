@@ -7,14 +7,14 @@ spring:
       server:
         webflux:
           routes:
-            # users-service
-            - id: users_route
-              uri: ${services.users}
+            # user-service
+            - id: user_route
+              uri: ${services.user}
               predicates:
                 - Path=/api/v1/{dir:auth|roles|users}/**
 
-            - id: users_openapi_route
-              uri: ${services.users}
+            - id: user_openapi_route
+              uri: ${services.user}
               predicates:
                 - Path=/swagger-ui.html, /swagger-ui/**, /v3/api-docs.yaml, /v3/api-docs/**
               filters:
@@ -34,5 +34,5 @@ spring:
                 - RewritePath=/users/?(?<segment>.*), /$\{segment}
 
 services:
-  users: lb://users-service
+  user: lb://user-service
   weather: lb://weather-service

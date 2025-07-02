@@ -1,0 +1,11 @@
+name: template
+include:
+  - mysql/compose.yaml
+  - kafka/compose.yaml
+  - lgtm/compose.yaml
+#  - cloud/compose.yaml
+  - cloud/composite/compose.yaml # use composite cloud services
+  - services/compose.yaml
+
+networks:
+  template-network:

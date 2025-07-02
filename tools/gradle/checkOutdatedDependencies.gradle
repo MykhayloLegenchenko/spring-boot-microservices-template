@@ -86,7 +86,7 @@ var DEPENDENCIES = [
         "org.projectlombok:lombok:${lombokVersion}",
         "org.mapstruct:mapstruct-processor:${mapstructVersion}",
         "com.uber.nullaway:nullaway:${nullawayVersion}",
-        "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:${opentelemetryJavaagentVersion}",
+        "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${opentelemetryInstrumentationVersion}",
         "io.opentelemetry:opentelemetry-bom:${opentelemetrySdkVersion}",
         "info.picocli:picocli:${picocliVersion}",
         "com.diffplug.spotless:${spotlessVersion}",

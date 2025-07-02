@@ -1,0 +1,11 @@
+package com.example.client.user.role.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import org.jspecify.annotations.Nullable;
+
+@Builder(toBuilder = true)
+@Schema(description = "Find users request payload")
+public record GetAllRolesRequest(
+    @Nullable @Schema(description = "Sort order. Fields: id, name", example = "name:desc")
+        String sort) {}

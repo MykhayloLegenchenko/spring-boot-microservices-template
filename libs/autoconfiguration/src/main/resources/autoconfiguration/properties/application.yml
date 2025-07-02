@@ -37,6 +37,42 @@ auth:
   jwt:
     issuer: https://example.com
 
+otel:
+  metrics:
+    exporter: otlp
+
+  traces:
+    exporter: otlp
+    sampler: exclude
+
+  logs:
+    exporter: otlp
+
+  propagators:
+    - tracecontext
+    - baggage
+
+  exporter:
+    otlp:
+      protocol: grpc
+
+  java:
+    disabled:
+      resource:
+        providers:
+          - io.opentelemetry.instrumentation.resources.ContainerResourceProvider
+          - io.opentelemetry.instrumentation.resources.HostResourceProvider
+          - io.opentelemetry.instrumentation.resources.OsResourceProvider
+          - io.opentelemetry.instrumentation.resources.ProcessResourceProvider
+          - io.opentelemetry.instrumentation.resources.ProcessRuntimeResourceProvider
+
+  exclude-sampler:
+    server:
+      paths: /actuator/(.*)?;/;/favicon.ico
+    client:
+      hosts: config-service;discovery-service;localhost
+      paths: /actuator/(.*)?
+
 logging:
   include-application-name: false
   pattern:
@@ -44,3 +80,14 @@ logging:
 
   level:
     com.netflix.discovery.eureka: WARN
+    com.example.common.opentelemetty.ExcludeSampler: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "no-discovery"
+
+  cloud:
+    discovery:
+      enabled: false

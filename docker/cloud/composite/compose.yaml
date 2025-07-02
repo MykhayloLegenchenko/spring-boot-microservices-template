@@ -1,18 +1,22 @@
 services:
-  discovery:
-    container_name: cloud
+  # Composite cloud service
+  discovery-service:
+    image: template/composite-cloud
+    container_name: composite-cloud
     hostname: config-service
     build:
       context: ../../..
       dockerfile: docker/cloud/composite/Dockerfile
-    environment:
-      PROFILE: "container, noconfig"
-      OTEL_PROFILE: 'disabled'
     ports:
       - '8888:8888' # config-service
       - '8761:8761' # discovery-service
       - '8080:8080' # gateway-service
     volumes:
       - ../../../config:/root/config
+      - composite-cloud-logs:/app/logs
+
     networks:
       - template-network
+
+volumes:
+  composite-cloud-logs:

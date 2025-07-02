@@ -1,0 +1,19 @@
+spring:
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "com.example.client.user.role.dto, com.example.client.user.user.dto"
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: test-google-client-id
+            clientSecret: test-google-client-secret
+
+auth:
+  jwt:
+    refresh-token:
+      ttl: 1800
+      secret: test-refresh-secret

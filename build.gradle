@@ -66,6 +66,7 @@ subprojects {
 
     // Override Spring Boot dependencies versions
     ext['junit-jupiter.version'] = junitJupiterVersion
+    ext['opentelemetry.version'] = opentelemetrySdkVersion
 
     dependencies {
         // JSpecify

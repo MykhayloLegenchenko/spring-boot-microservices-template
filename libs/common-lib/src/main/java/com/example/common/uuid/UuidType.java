@@ -2,7 +2,7 @@ package com.example.common.uuid;
 
 /** Represents the type of UUID. */
 public enum UuidType {
-  // users-service types
+  // user-service types
   USER(0x1001),
 
   UNKNOWN(0xFFFF);

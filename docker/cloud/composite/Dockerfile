@@ -1,31 +1,21 @@
 FROM eclipse-temurin:24-jre-alpine
 
-RUN apk add grep \
-    && apk add curl \
-    && apk cache clean \
-    && mkdir -p /app/logs
+WORKDIR app
+RUN apk add wget --no-cache
 
-ARG GROUP="cloud"
+COPY docker/cloud/composite/*.sh .
+COPY cloud/discovery-service/build/libs/*.jar discovery.jar
+COPY cloud/config-service/build/libs/*.jar /app/config.jar
+COPY cloud/gateway-service/build/libs/*.jar /app/gateway.jar
+RUN mkdir logs
 
-COPY ${GROUP}/discovery-service/build/libs/*.jar /app/discovery.jar
-COPY ${GROUP}/config-service/build/libs/*.jar /app/config.jar
-COPY ${GROUP}/gateway-service/build/libs/*.jar /app/gateway.jar
+HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD \
+    ./health-check.sh 8888 && \
+    ./health-check.sh 8761 && \
+    ./health-check.sh 8080 || exit 1
 
-COPY tools/opentelemetry /app/opentelemetry/
-COPY libs/opentelemetry-extension/build/libs/*.jar /app/opentelemetry/opentelemetry-extension.jar
+ENV JAVA_OPTS="-XX:InitialRAMPercentage=17.0 -XX:MaxRAMPercentage=27.0"
+ENV SPRING_PROFILES_ACTIVE="container"
+ENV CONFIG_SERVICE_URL="http://config-service:8888"
 
-COPY docker/services/*.sh /app/
-COPY docker/cloud/composite/*.sh /app/
-
-EXPOSE 8761
-EXPOSE 8888
-EXPOSE 8080
-
-HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD ["./app/check-all.sh"]
-
-ENV PROFILE="container"
-ENV OTEL_PROFILE=$PROFILE
-ENV DISCOVERY_SERVICE_URL="http://localhost:8761"
-ENV CONFIG_SERVICE_URL="http://localhost:8888"
-
-ENTRYPOINT ["./app/start-all.sh"]
+ENTRYPOINT ["./entry-point.sh"]

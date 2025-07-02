@@ -1,16 +1,6 @@
 spring:
   config:
     activate:
-      on-profile: "!noconfig"
+      on-profile: "!no-config"
 
     import: "configserver:${CONFIG_SERVICE_URL}"
-
----
-spring:
-  config:
-    activate:
-      on-profile: "nodiscovery"
-
-  cloud:
-    discovery:
-      enabled: false

@@ -11,6 +11,7 @@ spring:
         cachePrepStmts: true
         prepStmtCacheSize: 500
         prepStmtCacheSqlLimit: 1024
+        openTelemetry: DISABLED
 
   jpa:
     hibernate:

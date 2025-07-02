@@ -31,12 +31,15 @@ public class ErrorUtils {
   private static final URI TYPE_BLANK = URI.create("about:blank");
   private static final URI TYPE_VALIDATION = URI.create("validation");
 
+  private static final boolean SECURITY_PRESENT;
   private static final boolean OPEN_TELEMETRY_PRESENT;
   private static final boolean WEB_CLIENT_PRESENT;
 
   static {
     var loader = ErrorUtils.class.getClassLoader();
 
+    SECURITY_PRESENT =
+        ClassUtils.isPresent("org.springframework.security.access.AccessDeniedException", loader);
     OPEN_TELEMETRY_PRESENT = ClassUtils.isPresent("io.opentelemetry.api.trace.Span", loader);
     WEB_CLIENT_PRESENT = ClassUtils.isPresent("reactor.netty.http.client.HttpClient", loader);
   }
@@ -94,12 +97,18 @@ public class ErrorUtils {
     }
 
     return switch (ex) {
-      case AccessDeniedException _ -> HttpStatus.FORBIDDEN;
-      case AuthenticationException _ -> HttpStatus.UNAUTHORIZED;
       case ConstraintViolationException _, BindException _ -> HttpStatus.BAD_REQUEST;
       case RestClientResponseException _ -> HttpStatus.BAD_GATEWAY;
 
       default -> {
+        if (SECURITY_PRESENT) {
+          if (ex instanceof AccessDeniedException) {
+            yield HttpStatus.FORBIDDEN;
+          } else if (ex instanceof AuthenticationException) {
+            yield HttpStatus.UNAUTHORIZED;
+          }
+        }
+
         if (WEB_CLIENT_PRESENT && ex instanceof WebClientException) {
           yield HttpStatus.BAD_REQUEST;
         }

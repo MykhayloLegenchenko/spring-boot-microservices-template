@@ -13,6 +13,16 @@ auth:
       secret: test-access-secret
       ttl: 300
 
+otel:
+  metrics:
+    exporter: none
+
+  traces:
+    exporter: none
+
+  logs:
+    exporter: none
+
 ---
 spring:
   config:

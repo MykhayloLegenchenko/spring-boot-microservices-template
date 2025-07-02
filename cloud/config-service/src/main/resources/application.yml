@@ -7,3 +7,7 @@ spring:
 
   application:
     name: config-service
+
+otel:
+  sdk:
+    disabled: true

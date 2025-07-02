@@ -3,8 +3,13 @@ auth:
     access-token:
       secret: your-access-secret
 
+otel:
+  exporter:
+    otlp:
+      endpoint: http://opentelemetry-collector:4317
+
 services:
-  #  discovery: ${DISCOVERY_SERVICE_URL:http://discovery-service:8761}
-  discovery: ${DISCOVERY_SERVICE_URL:http://config-service:8761} # compound cloud
-  users: ${USERS_SERVICE_URL:lb://users-service}
-  weather: ${WEATHER_SERVICE_URL:lb://weather-service}
+#  discovery: http://discovery-service:8761
+  discovery: http://config-service:8761 # composite cloud
+  user: lb://user-service
+  weather: lb://weather-service

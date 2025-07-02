@@ -1,27 +1,18 @@
 FROM eclipse-temurin:24-jre-alpine
 
-RUN apk add grep \
-    && apk add curl \
-    && apk cache clean \
-    && mkdir /app
+WORKDIR app
+RUN apk add wget --no-cache
 
-ARG GROUP
-ARG SERVICE
+ARG APP_DIR
+COPY ${APP_DIR}/build/libs/*.jar app.jar
 
-COPY ${GROUP}/${SERVICE}/build/libs/*.jar /app/app.jar
+ENV SERVER_PORT=8080
+HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 -O - "http://localhost:$SERVER_PORT/actuator/health" | grep -q '"status":"UP"' || exit 1
 
-COPY tools/opentelemetry /app/opentelemetry/
-COPY libs/opentelemetry-extension/build/libs/*.jar /app/opentelemetry/opentelemetry-extension.jar
 
-COPY docker/services/*.sh /app/
-
-ENV PORT=8080
-EXPOSE $PORT
-
-HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD ./app/check.sh $PORT
-
-ENV PROFILE="container"
-ENV OTEL_PROFILE=$PROFILE
+ENV JAVA_OPTS="-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=80.0"
+ENV SPRING_PROFILES_ACTIVE="container"
 ENV CONFIG_SERVICE_URL="http://config-service:8888"
 
-ENTRYPOINT ["./app/run.sh", "app"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

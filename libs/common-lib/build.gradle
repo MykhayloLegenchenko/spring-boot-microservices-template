@@ -9,6 +9,12 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
 
-    // Observability
-    compileOnly 'io.opentelemetry:opentelemetry-api'
+    // Spring
+//    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // OpenTelemetry
+    compileOnly 'io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi'
+
+    // Google AutoService
+    annotationProcessor "com.google.auto.service:auto-service:${googleAutoServiceVersion}"
 }

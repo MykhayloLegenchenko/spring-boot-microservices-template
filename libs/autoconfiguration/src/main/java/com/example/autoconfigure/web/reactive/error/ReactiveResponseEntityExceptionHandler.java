@@ -44,9 +44,7 @@ public class ReactiveResponseEntityExceptionHandler extends ResponseEntityExcept
       HttpStatusCode status,
       ServerWebExchange exchange) {
 
-    if (log.isDebugEnabled()) {
-      log.debug("Response error", ex);
-    }
+    log.error("Unhandled exception", ex);
 
     //noinspection DataFlowIssue
     return super.handleExceptionInternal(ex, body, headers, status, exchange)

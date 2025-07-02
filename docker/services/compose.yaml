@@ -1,13 +1,13 @@
 services:
-  # Users service
-  users-service:
-    container_name: users-service
+  # User service
+  user-service:
+    image: template/user-service
+    container_name: user-service
     build:
       context: ../..
       dockerfile: docker/services/Dockerfile
       args:
-        GROUP: 'services'
-        SERVICE: 'users/service'
+        APP_DIR: services/user/service
     ports:
       - '8081:8080'
     networks:
@@ -15,28 +15,28 @@ services:
     depends_on:
       broker:
         condition: service_started
-      mysqldb:
+      mysql:
         condition: service_started
-      discovery:
+      discovery-service:
         condition: service_healthy
       observability:
         condition: service_started
 
   # Weather service
   weather-service:
+    image: template/weather-service
     container_name: weather-service
     build:
       context: ../..
       dockerfile: docker/services/Dockerfile
       args:
-        GROUP: 'services'
-        SERVICE: 'weather/service'
+        APP_DIR: services/weather/service
     ports:
       - '8082:8080'
     networks:
       - template-network
     depends_on:
-      discovery:
+      discovery-service:
         condition: service_healthy
       observability:
         condition: service_started

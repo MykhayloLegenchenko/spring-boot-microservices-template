@@ -12,3 +12,7 @@ eureka:
 
   server:
     eviction-interval-timer-in-ms: 30000
+
+otel:
+  sdk:
+    disabled: true
