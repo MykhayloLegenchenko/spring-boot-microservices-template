@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2086
 
 cd "$( dirname "$0" )" || exit
 

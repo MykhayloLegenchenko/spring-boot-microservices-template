@@ -10,6 +10,8 @@ auth:
 
 services:
   discovery: http://localhost:8761
+  user: http://localhost:8081
+  weather: http://localhost:8082
 
 otel:
   exporter:
