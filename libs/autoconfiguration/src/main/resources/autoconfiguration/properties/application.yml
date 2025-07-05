@@ -7,6 +7,10 @@ spring:
     locale-resolver: fixed
     locale: en_US
 
+  cloud:
+    refresh:
+      enabled: false
+
 management:
   endpoints:
     web:

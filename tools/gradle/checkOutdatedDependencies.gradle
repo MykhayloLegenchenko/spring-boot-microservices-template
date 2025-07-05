@@ -73,11 +73,13 @@ class Dependency {
 }
 
 var DEPENDENCIES = [
+        "io.github.classgraph:classgraph:${classGraphVersion}",
         "com.google.errorprone:error_prone_core:${errorproneVersion}",
         "net.ltgt.errorprone:${errorpronePluginVersion}",
         "org.jetbrains.gradle.plugin.idea-ext:${ideaExtPluginVersion}",
         "com.google.auto.service:auto-service:${googleAutoServiceVersion}",
         "com.google.googlejavaformat:google-java-format:${googleJavaFormatVersion}",
+        "org.graalvm.buildtools.native:${graalvmBuildToolsVersion}",
         "org.jspecify:jspecify:${jspecifyVersion}",
         "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}",
         "org.liquibase:liquibase-groovy-dsl:${liquibaseGroovyDslVersion}",

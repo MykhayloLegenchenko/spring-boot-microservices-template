@@ -3,13 +3,16 @@ package com.example.service.weather.weather;
 import com.example.client.weather.dto.CurrentWeatherResult;
 import com.example.client.weather.dto.WeatherRequest;
 import com.example.service.weather.weather.api.WeatherComApiClient;
+import com.example.service.weather.weather.api.WeatherComApiRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
 @EnableConfigurationProperties(WeatherApiProperties.class)
+@ImportRuntimeHints(WeatherComApiRuntimeHints.class)
 public class WeatherService {
   private final WeatherComApiClient weatherComClient;
   private final WeatherMapper weatherMapper;

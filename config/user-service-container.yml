@@ -16,6 +16,7 @@ auth:
   jwt:
     access-token:
       secret: your-access-secret
+#      ttl: 900
       ttl: 43200
 
     refresh-token:

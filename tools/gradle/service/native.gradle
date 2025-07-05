@@ -1,0 +1,19 @@
+/**
+ * Native compilation support.
+ */
+
+apply plugin: 'org.graalvm.buildtools.native'
+
+tasks.withType(JavaCompile).matching {
+    it.name in ['compileAotJava', 'compileAotTestJava']
+}.configureEach {
+    options.compilerArgs = options.compilerArgs.findAll { it != '-Werror' && !it.startsWith('-Xlint') }
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            resources.autodetect()
+        }
+    }
+}

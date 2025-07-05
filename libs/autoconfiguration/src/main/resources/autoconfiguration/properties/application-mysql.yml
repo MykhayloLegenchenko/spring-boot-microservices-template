@@ -36,3 +36,7 @@ spring:
 
   liquibase:
     change-log: classpath:db/db.changelog-root.xml
+
+  aot:
+    repositories:
+      enabled: true

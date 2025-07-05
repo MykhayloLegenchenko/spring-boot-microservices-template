@@ -1,12 +1,14 @@
 package com.example.autoconfigure.web.reactive.error;
 
 import com.example.common.error.ErrorUtils;
+import com.example.common.error.validation.ValidationErrorsRuntimeHints;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import reactor.core.publisher.Mono;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @RestControllerAdvice
+@ImportRuntimeHints(ValidationErrorsRuntimeHints.class)
 @RequiredArgsConstructor
 @Slf4j
 public class ReactiveResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {

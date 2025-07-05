@@ -1,9 +1,13 @@
 apply from: "${rootDir}/tools/gradle/service/base.gradle"
+apply from: "${rootDir}/tools/gradle/service/native.gradle"
 apply from: "${rootDir}/tools/gradle/service/reactive.gradle"
 
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+    // ClassGraph
+    implementation "io.github.classgraph:classgraph:${classGraphVersion}"
+
     // Project dependencies
     implementation project(':weather-client')
 }
