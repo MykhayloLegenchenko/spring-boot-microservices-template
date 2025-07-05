@@ -19,7 +19,7 @@ import org.springframework.validation.Validator;
 
 /** Utilities for mock responses. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MockResponseUtils {
+public final class MockResponseUtils {
 
   /**
    * Loads mock response specifications from resources.

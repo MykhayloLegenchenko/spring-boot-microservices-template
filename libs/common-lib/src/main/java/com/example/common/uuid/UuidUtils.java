@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /** UUID utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UuidUtils {
+public final class UuidUtils {
   /**
    * Creates a new random UUID.
    *

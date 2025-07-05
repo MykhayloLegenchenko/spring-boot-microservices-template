@@ -27,7 +27,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 
 /** Error utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ErrorUtils {
+public final class ErrorUtils {
   private static final URI TYPE_BLANK = URI.create("about:blank");
   private static final URI TYPE_VALIDATION = URI.create("validation");
 

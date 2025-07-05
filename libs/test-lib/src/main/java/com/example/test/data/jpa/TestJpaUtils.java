@@ -11,7 +11,7 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 /** JPA testing utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TestJpaUtils {
+public final class TestJpaUtils {
   /**
    * Executes SQL script from resource.
    *

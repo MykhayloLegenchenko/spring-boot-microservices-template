@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContext;
 
 /** Security utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SecurityUtils {
+public final class SecurityUtils {
 
   /**
    * Checks if the logged-in user has the role.

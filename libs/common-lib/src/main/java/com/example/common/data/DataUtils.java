@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
 
 /** Data utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataUtils {
+public final class DataUtils {
 
   /**
    * Parses a {@link Sort} object from the given string.

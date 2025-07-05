@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * <p>Intended for use by Spring security configurators.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SecurityConfigurationUtils {
+public final class SecurityConfigurationUtils {
 
   /** Returns the default CORS configuration. */
   public static CorsConfiguration defaultCorsConfiguration() {

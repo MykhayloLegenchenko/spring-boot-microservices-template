@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JwtUtils {
+public final class JwtUtils {
   public static String creatToken(
       JwtEncoder encoder, String issuer, String subject, String scope, int ttl) {
     var headers = JwsHeader.with(() -> JwsAlgorithms.HS256).build();

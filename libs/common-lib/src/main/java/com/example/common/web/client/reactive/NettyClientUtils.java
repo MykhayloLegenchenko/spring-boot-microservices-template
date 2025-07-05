@@ -11,7 +11,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 /** Netty client utils */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class NettyClientUtils {
+public final class NettyClientUtils {
 
   /**
    * Returns the {@link WebClient.Builder} customizer that configures Netty {@link HttpClient}

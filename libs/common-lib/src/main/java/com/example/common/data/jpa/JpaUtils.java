@@ -18,7 +18,7 @@ import org.springframework.util.ClassUtils;
 
 /** JPA utilities. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JpaUtils {
+public final class JpaUtils {
   /**
    * The "null" instant value used in the "soft delete" algorithm for tables with a unique
    * constraints.
