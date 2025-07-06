@@ -52,7 +52,6 @@ public class TestKafkaListener {
 
   @KafkaListener(topics = UserEvent.TOPIC, groupId = "test", id = "test-user")
   public void userEventListener(ConsumerRecord<String, UserEvent> data) {
-    System.out.println(getClass().getSimpleName() + "\nEvent: " + data);
     userEvents.add(data);
   }
 

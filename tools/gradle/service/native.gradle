@@ -2,7 +2,13 @@
  * Native compilation support.
  */
 
+//file:noinspection GrUnresolvedAccess
 apply plugin: 'org.graalvm.buildtools.native'
+
+dependencies {
+    // ClassGraph
+    implementation "io.github.classgraph:classgraph:${classGraphVersion}"
+}
 
 tasks.withType(JavaCompile).matching {
     it.name in ['compileAotJava', 'compileAotTestJava']

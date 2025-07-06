@@ -30,7 +30,7 @@ spring:
           batch_versioned_data: true
           time_zone: UTC
 
-        physical_naming_strategy: com.example.autoconfigure.data.jpa.naming.DefaultPhysicalNamingStrategy
+        physical_naming_strategy: com.example.common.data.jpa.naming.DefaultPhysicalNamingStrategy
 
     open-in-view: false
 

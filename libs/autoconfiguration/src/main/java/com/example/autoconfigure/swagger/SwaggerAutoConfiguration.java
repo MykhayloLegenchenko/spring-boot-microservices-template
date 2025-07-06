@@ -6,7 +6,7 @@ import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 
-/** Auto-configuration for Swagger. */
+/** Autoconfiguration for Swagger. */
 @SecurityScheme(
     name = "default",
     type = SecuritySchemeType.HTTP,

@@ -1,4 +1,4 @@
-package com.example.autoconfigure.data.jpa.naming;
+package com.example.common.data.jpa.naming;
 
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.Identifier;

@@ -20,8 +20,8 @@ dependencies {
     implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1'
 
     // Liquibase
-    runtimeOnly "org.liquibase:liquibase-core:${liquibaseVersion}"
-    liquibaseRuntime "org.liquibase:liquibase-core:${liquibaseVersion}"
+    runtimeOnly 'org.liquibase:liquibase-core'
+    liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:${liquibaseGroovyDslVersion}"
     liquibaseRuntime "info.picocli:picocli:${picocliVersion}"
     liquibaseRuntime 'com.mysql:mysql-connector-j'

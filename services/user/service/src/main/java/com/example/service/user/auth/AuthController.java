@@ -1,11 +1,13 @@
 package com.example.service.user.auth;
 
 import com.example.client.user.auth.AuthBlockingClient;
+import com.example.client.user.auth.AuthClientRuntimeHints;
 import com.example.client.user.auth.dto.AuthResponse;
 import com.example.client.user.auth.dto.LoginRequest;
 import com.example.client.user.auth.dto.Oauth2LoginRequest;
 import com.example.client.user.auth.dto.RefreshRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
+@ImportRuntimeHints(AuthClientRuntimeHints.class)
 @RequiredArgsConstructor
 public class AuthController implements AuthBlockingClient {
   private final AuthService authService;

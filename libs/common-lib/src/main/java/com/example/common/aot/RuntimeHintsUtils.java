@@ -1,7 +1,8 @@
 package com.example.common.aot;
 
 import io.github.classgraph.ClassGraph;
-import java.lang.reflect.Modifier;
+import io.github.classgraph.ClassInfo;
+import java.util.function.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.aop.SpringProxy;
@@ -35,6 +36,31 @@ public final class RuntimeHintsUtils {
                   MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                   MemberCategory.DECLARED_FIELDS));
     }
+  }
+
+  /**
+   * Registers all concrete DTO classes (including records) located in the specified base package
+   * for reflection-based access during AOT or native image compilation.
+   *
+   * <p>This method scans the {@code basePackage} and registers each non-abstract, non-interface
+   * class (including Java records) using the provided {@link RuntimeHints} instance, enabling
+   * reflection for serialization, deserialization, and other runtime access.
+   *
+   * @param hints the {@link RuntimeHints} instance used to register reflection hints
+   * @param basePackage the root package to scan for DTO classes
+   */
+  public static void registerDto(RuntimeHints hints, String basePackage) {
+    Class<?>[] dtoClasses;
+    try (var scanResult = new ClassGraph().enableClassInfo().acceptPackages(basePackage).scan()) {
+      dtoClasses =
+          scanResult
+              .getAllStandardClasses()
+              .filter(Predicate.not(ClassInfo::isAbstract)::test)
+              .loadClasses()
+              .toArray(Class[]::new);
+    }
+
+    registerDto(hints, dtoClasses);
   }
 
   /**
@@ -78,15 +104,6 @@ public final class RuntimeHintsUtils {
       RuntimeHints hints, Class<?> blockingClient, Class<?> reactiveClient, String basePackage) {
 
     registerClientInterface(hints, blockingClient, reactiveClient);
-
-    Class<?>[] dtoClasses;
-    try (var scanResult = new ClassGraph().acceptPackages(basePackage).scan()) {
-      dtoClasses =
-          scanResult.getAllClasses().loadClasses().stream()
-              .filter(type -> !type.isInterface() && !Modifier.isAbstract(type.getModifiers()))
-              .toArray(Class[]::new);
-    }
-
-    registerDto(hints, dtoClasses);
+    registerDto(hints, basePackage);
   }
 }

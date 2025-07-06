@@ -17,6 +17,7 @@ import org.hibernate.type.descriptor.java.JavaType;
 import org.hibernate.type.descriptor.jdbc.BasicBinder;
 import org.hibernate.type.descriptor.jdbc.BasicExtractor;
 import org.hibernate.type.descriptor.jdbc.TimestampUtcAsJdbcTimestampJdbcType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Custom JDBC type for instants.
@@ -67,7 +68,7 @@ public class NullableTimestampJdbcType extends TimestampUtcAsJdbcTimestampJdbcTy
       @Serial private static final long serialVersionUID = -3385175409127219144L;
 
       private interface TimestampSupplier {
-        Timestamp get() throws SQLException;
+        @Nullable Timestamp get() throws SQLException;
       }
 
       @Override

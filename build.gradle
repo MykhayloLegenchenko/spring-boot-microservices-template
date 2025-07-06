@@ -67,6 +67,7 @@ subprojects {
 
     // Override Spring Boot dependencies versions
     ext['junit-jupiter.version'] = junitJupiterVersion
+    ext['Liquibase.version'] = liquibaseVersion
     ext['opentelemetry.version'] = opentelemetrySdkVersion
 
     dependencies {

@@ -3,6 +3,7 @@ package com.example.service.user.user;
 import static com.example.service.user.user.UserService.Access.*;
 
 import com.example.client.user.user.UserBlockingClient;
+import com.example.client.user.user.UserClientRuntimeHints;
 import com.example.client.user.user.dto.CountUsersRequest;
 import com.example.client.user.user.dto.FindUsersRequest;
 import com.example.client.user.user.dto.RegisterUserRequest;
@@ -16,13 +17,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
+@ImportRuntimeHints(UserClientRuntimeHints.class)
 @PreAuthorize("hasRole('ROLE_ADMIN')")
+@RequiredArgsConstructor
 public class UserController implements UserBlockingClient {
   private final UserService userService;
 

@@ -1,7 +1,7 @@
 package com.example.autoconfigure.web.servlet.error;
 
 import com.example.common.error.ErrorUtils;
-import com.example.common.error.validation.ValidationErrorsRuntimeHints;
+import com.example.common.error.ValidationErrorsRuntimeHints;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;

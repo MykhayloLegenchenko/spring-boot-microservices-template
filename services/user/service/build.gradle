@@ -3,6 +3,7 @@ ext {
 }
 
 apply from: "${rootDir}/tools/gradle/service/base.gradle"
+apply from: "${rootDir}/tools/gradle/service/native.gradle"
 apply from: "${rootDir}/tools/gradle/service/servlet.gradle"
 apply from: "${rootDir}/tools/gradle/service/mysql.gradle"
 apply from: "${rootDir}/tools/gradle/service/kafka.gradle"

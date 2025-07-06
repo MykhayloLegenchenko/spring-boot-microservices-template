@@ -1,3 +1,5 @@
+com.example.autoconfigure.data.jpa.HibernateJpaAutoConfiguration
+com.example.autoconfigure.data.liquibase.LiquibaseAutoConfiguration
 com.example.autoconfigure.swagger.SwaggerAutoConfiguration
 com.example.autoconfigure.web.reactive.error.ReactiveResponseEntityExceptionHandler
 com.example.autoconfigure.web.reactive.security.ReactiveSecurityAutoConfiguration

@@ -43,10 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("FutureReturnValueIgnored")
 public class UserService {
   private static final String USER_NOT_FOUND = "User is not found.";
-  private static final Set<String> SORT_FIELDS =
-      UserEntity_.class_.getAttributes().stream()
-          .map(Attribute::getName)
-          .collect(Collectors.toSet());
+  @Nullable private static Set<String> sortFields;
 
   private final PasswordEncoder passwordEncoder;
   private final EntityManager em;
@@ -133,7 +130,10 @@ public class UserService {
 
     var pageRequest =
         OffsetPageRequest.of(
-            request.offset(), request.limit(), DataUtils.parseSort(request.sort(), SORT_FIELDS));
+            request.offset(),
+            request.limit(),
+            DataUtils.parseSort(request.sort(), getSortFields()));
+
     var orderBy =
         pageRequest
             .getSort()
@@ -268,5 +268,19 @@ public class UserService {
 
   private UserData toUserDto(UserEntity user, Access access) {
     return access.isAdmin() ? userMapper.toUserDtoEx(user) : userMapper.toUserDto(user);
+  }
+
+  private static Set<String> getSortFields() {
+    // The sortFields field is subject to a benign data race
+    var sf = sortFields;
+    if (sf == null) {
+      sf =
+          UserEntity_.class_.getAttributes().stream()
+              .map(Attribute::getName)
+              .collect(Collectors.toSet());
+      sortFields = sf;
+    }
+
+    return sf;
   }
 }
