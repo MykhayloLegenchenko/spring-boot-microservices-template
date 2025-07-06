@@ -17,6 +17,23 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public final class RuntimeHintsUtils {
 
   /**
+   * Registers the declared constructors of the given types for reflection-based access during
+   * native image generation.
+   *
+   * <p>This includes declared constructors to ensure compatibility with frameworks like Jackson or
+   * other serialization libraries that rely on reflection.
+   *
+   * @param hints the {@link RuntimeHints} instance used to register reflection metadata
+   * @param types the array of {@link Class} objects whose constructors should be registered
+   */
+  public static void registerConstructors(RuntimeHints hints, Class<?>... types) {
+    var reflection = hints.reflection();
+    for (var type : types) {
+      reflection.registerType(type, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+    }
+  }
+
+  /**
    * Registers the specified DTO classes for reflection access during native image generation.
    *
    * <p>This includes public constructors, methods, and declared fields to ensure compatibility with
