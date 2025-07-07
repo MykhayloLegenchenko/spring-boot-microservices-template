@@ -17,6 +17,7 @@ tasks.withType(JavaCompile).matching {
 }
 
 graalvmNative {
+    testSupport = false
     binaries {
         named("main") {
             resources.autodetect()
