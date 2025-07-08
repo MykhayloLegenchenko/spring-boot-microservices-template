@@ -8,4 +8,4 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("api.weather")
 @Validated
-public record WeatherApiProperties(@NotNull @URL String url, @NotBlank String apiKey) {}
+record WeatherApiProperties(@NotNull @URL String url, @NotBlank String apiKey) {}

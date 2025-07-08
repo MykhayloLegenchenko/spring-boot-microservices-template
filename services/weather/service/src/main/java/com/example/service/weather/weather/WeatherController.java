@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 @ImportRuntimeHints(WeatherClientRuntimeHints.class)
-public class WeatherController implements WeatherReactiveClient {
+class WeatherController implements WeatherReactiveClient {
   private final WeatherService weatherService;
 
   @Override

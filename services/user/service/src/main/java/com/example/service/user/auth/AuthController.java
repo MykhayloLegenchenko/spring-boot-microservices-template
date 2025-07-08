@@ -19,7 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RestController
 @ImportRuntimeHints(AuthClientRuntimeHints.class)
 @RequiredArgsConstructor
-public class AuthController implements AuthBlockingClient {
+class AuthController implements AuthBlockingClient {
   private final AuthService authService;
 
   @Override

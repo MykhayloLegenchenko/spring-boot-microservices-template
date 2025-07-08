@@ -9,7 +9,7 @@ import com.example.service.weather.weather.api.dto.ApiWeatherDto;
 import org.mapstruct.Mapper;
 
 @Mapper
-public interface WeatherMapper {
+interface WeatherMapper {
   WeatherDto toWeatherDto(ApiWeatherDto src);
 
   LocationDto toLocationDto(ApiLocationDto src);

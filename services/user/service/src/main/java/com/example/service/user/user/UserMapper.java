@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper
-public interface UserMapper {
+interface UserMapper {
   @Mapping(target = "firstName", expression = "java(src.firstName().strip())")
   @Mapping(
       target = "lastName",

@@ -8,7 +8,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /** Trace context propagation filter. */
-public class TraceContextPropagationFilter implements GlobalFilter {
+class TraceContextPropagationFilter implements GlobalFilter {
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

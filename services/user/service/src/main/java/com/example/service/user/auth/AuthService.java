@@ -48,7 +48,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @EnableConfigurationProperties(JwtProperties.class)
-public final class AuthService {
+class AuthService {
   private final JwtProperties jwtProperties;
   private final AuthenticationConfiguration authenticationConfiguration;
   private final JwtEncoder accessEncoder;

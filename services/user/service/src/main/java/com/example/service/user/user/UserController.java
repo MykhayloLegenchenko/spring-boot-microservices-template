@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ImportRuntimeHints(UserClientRuntimeHints.class)
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
-public class UserController implements UserBlockingClient {
+class UserController implements UserBlockingClient {
   private final UserService userService;
 
   @Override

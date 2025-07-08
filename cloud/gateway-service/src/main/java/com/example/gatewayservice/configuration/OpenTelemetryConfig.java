@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(OpenTelemetryAutoConfiguration.class)
 @ConditionalOnProperty(name = "otel.sdk.disabled", havingValue = "false", matchIfMissing = true)
-public class OpenTelemetryConfig {
+class OpenTelemetryConfig {
 
   @Bean
   TraceContextPropagationFilter traceContextPropagationFilter() {

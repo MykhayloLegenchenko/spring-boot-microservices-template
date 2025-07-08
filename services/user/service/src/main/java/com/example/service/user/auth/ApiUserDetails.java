@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.User;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class ApiUserDetails extends User implements ApiUser {
+class ApiUserDetails extends User implements ApiUser {
   UUID uuid;
   String name;
 

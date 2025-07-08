@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties("auth.jwt")
 @Validated
-public record JwtProperties(
+record JwtProperties(
     @URL String issuer,
     @NotNull @Valid EncoderProperties accessToken,
     @NotNull @Valid EncoderProperties refreshToken) {

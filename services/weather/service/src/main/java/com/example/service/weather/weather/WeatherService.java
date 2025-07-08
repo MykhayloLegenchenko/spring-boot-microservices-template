@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Service
 @EnableConfigurationProperties(WeatherApiProperties.class)
 @ImportRuntimeHints(WeatherComApiRuntimeHints.class)
-public class WeatherService {
+class WeatherService {
   private final WeatherComApiClient weatherComClient;
   private final WeatherMapper weatherMapper;
 
