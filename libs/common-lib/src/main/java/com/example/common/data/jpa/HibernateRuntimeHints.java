@@ -38,7 +38,7 @@ public class HibernateRuntimeHints implements RuntimeHintsRegistrar {
     }
   }
 
-  private void registerMetamodels(RuntimeHints hints) {
+  private static void registerMetamodels(RuntimeHints hints) {
     var reflection = hints.reflection();
     try (var scanResult = new ClassGraph().enableAnnotationInfo().scan()) {
       for (var type :
